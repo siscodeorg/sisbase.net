@@ -16,7 +16,11 @@ namespace sisbase.CommandsNext {
         internal IServiceProvider _provider;
         internal ServiceCollection _collection = new();
 
-        public SisbaseCommandSystem(DiscordSocketClient client) => _client = client;
+        public SisbaseCommandSystem(DiscordSocketClient client) {
+            _client = client;
+            _prefixResolver = new RealTimePrefixResolver(this);
+            _provider = InitialServiceCollection.BuildServiceProvider();
+        }
 
         public SisbaseCommandSystem(DiscordSocketClient client, SisbaseCommandSystemConfiguration config) {
             _client = client;
