@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,9 @@ namespace sisbase.CommandsNext {
         public async Task InstallCommandsAsync(Assembly assembly) {
             await _commandService.AddModulesAsync(assembly, _provider);
         }
+
+        internal IServiceCollection InitialServiceCollection => _collection
+            .AddSingleton(_client)
+            .AddSingleton(_commandService);
     }
 }
