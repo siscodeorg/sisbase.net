@@ -18,6 +18,13 @@ namespace sisbase.CommandsNext {
 
         public SisbaseCommandSystem(DiscordSocketClient client) => _client = client;
 
+        public SisbaseCommandSystem(DiscordSocketClient client, SisbaseCommandSystemConfiguration config) {
+            _client = client;
+            _prefixResolver = config.PrefixResolver ?? new RealTimePrefixResolver(this);
+            config.Services?.Invoke(InitialServiceCollection);
+            _provider = InitialServiceCollection.BuildServiceProvider();
+        }
+
         public async Task InstallCommandsAsync(Assembly assembly) {
             await _commandService.AddModulesAsync(assembly, _provider);
         }
