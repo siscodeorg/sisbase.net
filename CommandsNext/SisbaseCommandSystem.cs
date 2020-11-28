@@ -1,6 +1,8 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using sisbase.CommandsNext.Extensions;
+using sisbase.Workarounds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,11 +41,12 @@ namespace sisbase.CommandsNext {
             var argPos = await _prefixResolver.GetArgumentPositionAsync(msg);
             if (argPos == 0) return;
             var ctx = new SocketCommandContext(_client, msg);
-            await _commandService.ExecuteAsync(
-                    context: ctx,
-                    argPos: argPos,
-                    services: _provider
-            );
+            var commands = _commandService.Search(message.Content.Substring(argPos));
+            var (response, command) = await Ugly.ValidateAndGetBestMatch(commands, ctx, _provider);
+            if (!response.IsSuccess) return;
+            if (response is not ParseResult parse) return;
+            var sctx = ctx.AsSisbaseContext(command.Value.Command);
+            await command.Value.ExecuteAsync(sctx, parse, _provider);
         }
 
         internal IServiceCollection InitialServiceCollection => _collection
