@@ -29,6 +29,22 @@ namespace sisbase.Systems {
             CommandSystem = commandSystem;
         }
 
+        internal async Task<SisbaseResult> LoadType(Type type) {
+            if (LoadedSystems.ContainsKey(type))
+                return SisbaseResult.FromSucess();
+
+            BaseSystem system;
+
+            if (UnloadedSystems.ContainsKey(type)) {
+                system = UnloadedSystems[type];
+            }
+            else {
+                system = InitalLoadType(type);
+            }
+
+            return await LoadSystem(type, system);
+        }
+
         internal async Task<SisbaseResult> LoadSystem(Type type, BaseSystem system) {
             if (!type.IsSubclassOf(typeof(BaseSystem)))
                 return SisbaseResult.FromError($"{type} is not a subclass of BaseSystem");
