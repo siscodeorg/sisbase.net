@@ -13,20 +13,20 @@ using System.Threading.Tasks;
 
 namespace sisbase.Systems {
     public class SystemManager {
-        internal DiscordSocketClient Client { get; init; }
-        internal SystemConfig Config { get; init; }
-        internal SisbaseCommandSystem CommandSystem { get; init; }
-        internal ConcurrentDictionary<BaseSystem, Timer> Timers { get; } = new();
-        internal ConcurrentQueue<Assembly> AssemblyQueue { get; } = new();
-        internal ConcurrentBag<Assembly> LoadedAssemblies { get; } = new();
+        internal DiscordSocketClient client { get; init; }
+        internal SystemConfig config { get; init; }
+        internal SisbaseCommandSystem commandSystem { get; init; }
+        internal ConcurrentDictionary<BaseSystem, Timer> timers { get; } = new();
+        internal ConcurrentQueue<Assembly> assemblyQueue { get; } = new();
+        internal ConcurrentBag<Assembly> loadedAssemblies { get; } = new();
 
         public ConcurrentDictionary<Type, BaseSystem> LoadedSystems { get; } = new();
         public ConcurrentDictionary<Type, BaseSystem> UnloadedSystems { get; } = new();
 
-        public SystemManager(DiscordSocketClient client, SystemConfig config, SisbaseCommandSystem commandSystem) {
-            Client = client;
-            Config = config;
-            CommandSystem = commandSystem;
+        public SystemManager(DiscordSocketClient Client, SystemConfig Config, SisbaseCommandSystem CommandSystem) {
+            client = Client;
+            config = Config;
+            commandSystem = CommandSystem;
         }
 
         internal async Task<SisbaseResult> LoadType(Type type) {
@@ -60,7 +60,7 @@ namespace sisbase.Systems {
             await system.Activate();
 
             if (system is ClientSystem clientSystem) {
-                await clientSystem.ApplyToClient(Client);
+                await clientSystem.ApplyToClient(client);
             }
 
             LoadedSystems.TryAdd(type, system);
@@ -71,7 +71,7 @@ namespace sisbase.Systems {
             var System = (BaseSystem)Activator.CreateInstance(type);
 
             if (System is ClientSystem clientSystem) {
-                clientSystem.Client = Client;
+                clientSystem.Client = client;
             }
 
             return System;
