@@ -46,8 +46,8 @@ namespace sisbase.Systems {
         }
 
         internal async Task<SisbaseResult> LoadSystem(Type type, BaseSystem system) {
-            if (!type.IsSubclassOf(typeof(BaseSystem)))
-                return SisbaseResult.FromError($"{type} is not a subclass of BaseSystem");
+            var result = IsValidType(type);
+            if (!result.IsSucess) return result;
 
             if (!await system.CheckPreconditions()) {
                 UnloadedSystems.AddOrUpdate(type, system, (type, oldValue) => system);
@@ -75,6 +75,13 @@ namespace sisbase.Systems {
             }
 
             return System;
+        }
+
+        internal static SisbaseResult IsValidType(Type type) {
+            if (!type.IsSubclassOf(typeof(BaseSystem)))
+                return SisbaseResult.FromError($"{type} is not a subclass of BaseSystem");
+
+            return SisbaseResult.FromSucess();
         }
     }
 }
