@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using sisbase.CommandsNext;
+using sisbase.Common;
 using sisbase.Configuration;
 using System;
 using System.Collections.Concurrent;
@@ -26,6 +27,16 @@ namespace sisbase.Systems {
             Client = client;
             Config = config;
             CommandSystem = commandSystem;
+        }
+
+        internal BaseSystem InitalLoadType(Type type) {
+            var System = (BaseSystem)Activator.CreateInstance(type);
+
+            if (System is ClientSystem clientSystem) {
+                clientSystem.Client = Client;
+            }
+
+            return System;
         }
     }
 }
