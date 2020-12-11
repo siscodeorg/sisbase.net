@@ -29,6 +29,28 @@ namespace sisbase.Systems {
             CommandSystem = commandSystem;
         }
 
+        internal async Task<SisbaseResult> LoadSystem(Type type, BaseSystem system) {
+            if (!type.IsSubclassOf(typeof(BaseSystem)))
+                return SisbaseResult.FromError($"{type} is not a subclass of BaseSystem");
+
+            if (!await system.CheckPreconditions()) {
+                UnloadedSystems.AddOrUpdate(type, system, (type, oldValue) => system);
+                return SisbaseResult.FromError($"Preconditions failed for {system}");
+            }
+
+            if (UnloadedSystems.ContainsKey(type))
+                UnloadedSystems.TryRemove(new(type, UnloadedSystems[type]));
+
+            await system.Activate();
+
+            if (system is ClientSystem clientSystem) {
+                await clientSystem.ApplyToClient(Client);
+            }
+
+            LoadedSystems.TryAdd(type, system);
+            return SisbaseResult.FromSucess();
+        }
+
         internal BaseSystem InitalLoadType(Type type) {
             var System = (BaseSystem)Activator.CreateInstance(type);
 
