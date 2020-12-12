@@ -2,6 +2,8 @@
 using sisbase.CommandsNext;
 using sisbase.Common;
 using sisbase.Configuration;
+using sisbase.Logging;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -86,6 +88,18 @@ namespace sisbase.Systems {
                 return SisbaseResult.FromError($"Could not add ({type},{system}) to UnloadedSystems. Please report this to the sisbase devs.");
 
             return SisbaseResult.FromSucess();
+        }
+
+        internal async Task LoadAssembly(Assembly assembly) {
+            var systemTypes = GetSystemsFromAssembly(assembly);
+            foreach (var type in systemTypes) {
+                var result =  await LoadType(type);
+                if (result.IsSucess) {
+                    Logger.Log("SystemManager", $"{type.Name} Loaded sucessfully.");
+                } else {
+                    Logger.Error("SystemManager", result.Error);
+                }
+            }
         }
 
         internal static List<Type> GetSystemsFromAssembly(Assembly assembly)
