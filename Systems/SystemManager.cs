@@ -103,8 +103,15 @@ namespace sisbase.Systems {
             while(assemblyQueue.TryPeek(out _)) {
                 assemblyQueue.TryDequeue(out var assembly);
                 Logger.Log("SystemManager", $"Loading systems from {assembly.GetName().Name}");
-                await LoadAssembly(assembly);
-                loadedAssemblies.Add(assembly);
+
+                var result = await LoadAssembly(assembly);
+
+                if (!result.IsSucess) {
+                    Logger.Error("SystemManager", result.Error);
+                } else {
+                    Logger.Log("SystemManager", $"Systems from {assembly.GetName().Name} loaded sucessfully.");
+                    loadedAssemblies.Add(assembly);
+                }
             }
             Logger.Log("SystemManager", "Finished loading all assemblies");
         }
