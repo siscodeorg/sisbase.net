@@ -90,6 +90,16 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        internal async Task LoadAssemblyQueue() {
+            while(assemblyQueue.TryPeek(out _)) {
+                assemblyQueue.TryDequeue(out var assembly);
+                Logger.Log("SystemManager", $"Loading systems from {assembly.GetName().Name}");
+                await LoadAssembly(assembly);
+                loadedAssemblies.Add(assembly);
+            }
+            Logger.Log("SystemManager", "Finished loading all assemblies");
+        }
+
         internal async Task LoadAssembly(Assembly assembly) {
             var systemTypes = GetSystemsFromAssembly(assembly);
             foreach (var type in systemTypes) {
