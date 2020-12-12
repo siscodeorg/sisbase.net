@@ -100,6 +100,23 @@ namespace sisbase.Systems {
             Logger.Log("SystemManager", "Finished loading all assemblies");
         }
 
+        internal async Task RetryUnloadedSystems() {
+            Logger.Log("SystemManager", "Retrying loading for all unloaded systems.");
+            foreach (var (type, system) in UnloadedSystems) {
+                Logger.Log("SystemManager", $"Loading {system}");
+                var result = await LoadSystem(type, system);
+
+                if(result.IsSucess) {
+                    Logger.Log("SystemManager", $"Sucessfully loaded {system}");
+                } else {
+                    Logger.Error("SystemManager", result.Error);
+                }
+            }
+
+            await ReloadCommandSystem();
+            Logger.Log("SystemManager", "Retry attempt finished.");
+        }
+
         internal async Task ReloadCommandSystem() {
             var modules = commandSystem._commandService.Modules;
 
