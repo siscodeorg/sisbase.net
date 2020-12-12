@@ -137,7 +137,10 @@ namespace sisbase.Systems {
                 await commandSystem._commandService.AddModulesAsync(assembly, commandSystem._provider);
         }
 
-        internal async Task LoadAssembly(Assembly assembly) {
+        internal async Task<SisbaseResult> LoadAssembly(Assembly assembly) {
+            if (loadedAssemblies.Contains(assembly))
+                return SisbaseResult.FromError($"Assembly {assembly.GetName().Name} is already loaded.");
+
             var systemTypes = GetSystemsFromAssembly(assembly);
             foreach (var type in systemTypes) {
                 var result =  await LoadType(type);
@@ -147,6 +150,7 @@ namespace sisbase.Systems {
                     Logger.Error("SystemManager", result.Error);
                 }
             }
+            return SisbaseResult.FromSucess();
         }
 
         internal static List<Type> GetSystemsFromAssembly(Assembly assembly)
