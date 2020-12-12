@@ -31,6 +31,15 @@ namespace sisbase.Systems {
             commandSystem = CommandSystem;
         }
 
+        public async Task<SisbaseResult> InstallSystemsAsync(Assembly assembly) {
+            if (assemblyQueue.Contains(assembly))
+                return SisbaseResult.FromSucess();
+
+            assemblyQueue.Enqueue(assembly);
+            await LoadAssemblyQueue();
+            return SisbaseResult.FromSucess();
+        }
+
         internal async Task<SisbaseResult> LoadType(Type type) {
             if (LoadedSystems.ContainsKey(type))
                 return SisbaseResult.FromSucess();
