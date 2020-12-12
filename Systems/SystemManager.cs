@@ -100,6 +100,17 @@ namespace sisbase.Systems {
             Logger.Log("SystemManager", "Finished loading all assemblies");
         }
 
+        internal async Task ReloadCommandSystem() {
+            var modules = commandSystem._commandService.Modules;
+
+            foreach (var module in modules) {
+                await commandSystem._commandService.RemoveModuleAsync(module);
+            }
+
+            foreach (var assembly in loadedAssemblies)
+                await commandSystem._commandService.AddModulesAsync(assembly, commandSystem._provider);
+        }
+
         internal async Task LoadAssembly(Assembly assembly) {
             var systemTypes = GetSystemsFromAssembly(assembly);
             foreach (var type in systemTypes) {
