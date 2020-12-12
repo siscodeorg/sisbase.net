@@ -67,6 +67,23 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        internal async Task<SisbaseResult> UnloadSystem(Type type, BaseSystem system) {
+            if (UnloadedSystems.ContainsKey(type))
+                return SisbaseResult.FromSucess();
+
+            if (!LoadedSystems.ContainsKey(type))
+                return SisbaseResult.FromError($"{system} was not loaded");
+
+            var check = IsValidType(type);
+            if (!check.IsSucess) return check;
+
+            await system.Deactivate();
+
+            UnloadedSystems.TryAdd(type, system);
+
+            return SisbaseResult.FromSucess();
+        }
+
         internal BaseSystem InitalLoadType(Type type) {
             var System = (BaseSystem)Activator.CreateInstance(type);
 
