@@ -88,6 +88,9 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        internal static List<Type> GetSystemsFromAssembly(Assembly assembly)
+            => assembly.GetTypes().Where(x => IsValidType(x).IsSucess).ToList();
+
         internal BaseSystem InitalLoadType(Type type) {
             var System = (BaseSystem)Activator.CreateInstance(type);
 
