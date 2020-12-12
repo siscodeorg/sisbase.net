@@ -37,6 +37,7 @@ namespace sisbase.Systems {
 
             assemblyQueue.Enqueue(assembly);
             await LoadAssemblyQueue();
+            await ReloadCommandSystem();
             return SisbaseResult.FromSucess();
         }
 
