@@ -79,7 +79,11 @@ namespace sisbase.Systems {
 
             await system.Deactivate();
 
-            UnloadedSystems.TryAdd(type, system);
+            if (!LoadedSystems.TryRemove(new(type, system)))
+                return SisbaseResult.FromError($"Could not remove ({type},{system}) from LoadedSystems. Please report this to the sisbase devs.");
+
+            if (!UnloadedSystems.TryAdd(type, system))
+                return SisbaseResult.FromError($"Could not add ({type},{system}) to UnloadedSystems. Please report this to the sisbase devs.");
 
             return SisbaseResult.FromSucess();
         }
