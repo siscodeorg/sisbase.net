@@ -62,6 +62,11 @@ namespace sisbase.Systems {
             var result = IsValidType(type);
             if (!result.IsSucess) return result;
 
+            if (IsConfigDisabled(system)) {
+                DisabledSystems.AddOrUpdate(type, system, (type, oldValue) => system);
+                return SisbaseResult.FromError($"{system} is disabled in config @ {config.Path}");
+            }
+
             if (!await system.CheckPreconditions()) {
                 UnloadedSystems.AddOrUpdate(type, system, (type, oldValue) => system);
                 return SisbaseResult.FromError($"Preconditions failed for {system}");
