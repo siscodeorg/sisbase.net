@@ -114,6 +114,9 @@ namespace sisbase.Systems {
                     loadedAssemblies.Add(assembly);
                 }
             }
+
+            UpdateConfig();
+
             Logger.Log("SystemManager", "Finished loading all assemblies");
         }
 
