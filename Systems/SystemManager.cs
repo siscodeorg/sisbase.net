@@ -148,6 +148,7 @@ namespace sisbase.Systems {
 
             var allSystems = LoadedSystems.Values.ToList();
             allSystems.AddRange(UnloadedSystems.Values);
+            allSystems.AddRange(DisabledSystems.Values);
 
             var kvps = allSystems
                 .Distinct()
