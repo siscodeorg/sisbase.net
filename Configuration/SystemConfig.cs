@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace sisbase.Configuration {
     public class SystemConfig : IConfiguration {
-        [JsonProperty] public Dictionary<string, SystemData> Systems { get; set; }
+        [JsonProperty] public Dictionary<string, SystemData> Systems { get; set; } = new();
         public string Path { get; set; }
 
         public void Create(FileInfo file) {
@@ -24,5 +24,5 @@ namespace sisbase.Configuration {
         public void Update() => File.WriteAllText(Path, JsonConvert.SerializeObject(this, Formatting.Indented));
     }
 
-    public record SystemData (string Name, bool Enabled);
+    public record SystemData (string Name, bool Enabled = true);
 }
