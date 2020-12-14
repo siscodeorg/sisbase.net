@@ -204,5 +204,14 @@ namespace sisbase.Systems {
 
             return SisbaseResult.FromSucess();
         }
+
+        internal bool IsConfigDisabled(BaseSystem system) {
+            if (config.Systems.ContainsKey(system.GetSisbaseTypeName())) {
+                if (!config.Systems[system.GetSisbaseTypeName()].Enabled) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
