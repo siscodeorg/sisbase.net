@@ -24,6 +24,7 @@ namespace sisbase.Systems {
 
         public ConcurrentDictionary<Type, BaseSystem> LoadedSystems { get; } = new();
         public ConcurrentDictionary<Type, BaseSystem> UnloadedSystems { get; } = new();
+        public ConcurrentDictionary<Type, BaseSystem> DisabledSystems { get; } = new();
 
         public SystemManager(DiscordSocketClient Client, SystemConfig Config, SisbaseCommandSystem CommandSystem) {
             client = Client;
