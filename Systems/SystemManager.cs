@@ -134,6 +134,26 @@ namespace sisbase.Systems {
             Logger.Log("SystemManager", "Retry attempt finished.");
         }
 
+        internal void UpdateConfig() {
+            Logger.Log("SystemManager", "Saving all systems to config file");
+
+            var allSystems = LoadedSystems.Values.ToList();
+            allSystems.AddRange(UnloadedSystems.Values);
+
+            var kvps = allSystems
+                .Distinct()
+                .Select(x =>
+                    KeyValuePair.Create(
+                        x.GetSisbaseTypeName(),
+                        x.ToSystemData()
+                ));
+
+            config.Systems = kvps.ToDictionary(x => x.Key, y => y.Value);
+            config.Update();
+
+            Logger.Log("SystemManager", $"Config File @{config.Path} updated");
+        }
+
         internal async Task ReloadCommandSystem() {
             var modules = commandSystem._commandService.Modules;
 
