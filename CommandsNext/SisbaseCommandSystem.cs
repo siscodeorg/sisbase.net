@@ -41,7 +41,7 @@ namespace sisbase.CommandsNext {
             var argPos = await _prefixResolver.GetArgumentPositionAsync(msg);
             if (argPos == 0) return;
             var ctx = new SocketCommandContext(_client, msg);
-            var commands = _commandService.Search(message.Content.Substring(argPos));
+            var commands = _commandService.Search(message.Content[argPos..]);
             var (response, command) = await Ugly.ValidateAndGetBestMatch(commands, ctx, _provider);
             if (!response.IsSuccess) return;
             if (response is not ParseResult parse) return;
