@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 namespace sisbase.Systems {
     public static class ExtensionSystemManager {
         public static string GetSisbaseTypeName(this BaseSystem system)
-            => $"{system.GetType().Assembly}::{system.GetType().Namespace}.{system.GetType().Name}";
+            => $"{system.GetType().Assembly.GetName().Name}::{system.GetType().FullName}";
     }
 }
