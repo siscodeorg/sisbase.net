@@ -60,7 +60,8 @@ namespace sisbase.Systems {
 
         internal async Task<SisbaseResult> LoadSystem(Type type, BaseSystem system) {
             var result = IsValidType(type);
-            if (!result.IsSucess) return result;
+            if (result.Any(x => !x.IsSucess))
+                return SisbaseResult.FromError(string.Join('\n', result.Select(c => c.Error)));
 
             if (IsConfigDisabled(system)) {
                 system.Enabled = false;
@@ -94,7 +95,8 @@ namespace sisbase.Systems {
                 return SisbaseResult.FromError($"{system} was not loaded");
 
             var check = IsValidType(type);
-            if (!check.IsSucess) return check;
+            if (check.Any(x => !x.IsSucess))
+                return SisbaseResult.FromError(string.Join('\n', check.Select(c => c.Error)));
 
             await system.Deactivate();
 
@@ -193,7 +195,7 @@ namespace sisbase.Systems {
         }
 
         internal static List<Type> GetSystemsFromAssembly(Assembly assembly)
-            => assembly.GetTypes().Where(x => IsValidType(x).IsSucess).ToList();
+            => assembly.GetTypes().Where(x => IsValidType(x).All(v => v.IsSucess)).ToList();
 
         internal BaseSystem InitalLoadType(Type type) {
             var System = (BaseSystem)Activator.CreateInstance(type);
@@ -205,11 +207,19 @@ namespace sisbase.Systems {
             return System;
         }
 
-        internal static SisbaseResult IsValidType(Type type) {
-            if (!type.IsSubclassOf(typeof(BaseSystem)))
-                return SisbaseResult.FromError($"{type} is not a subclass of BaseSystem");
+        internal static List<SisbaseResult> IsValidType(Type type) {
+            var errors = new List<SisbaseResult>();
 
-            return SisbaseResult.FromSucess();
+            if (!type.IsSubclassOf(typeof(BaseSystem)))
+                errors.Add(SisbaseResult.FromError($"{type} is not a subclass of BaseSystem"));
+
+            if (type.IsNotPublic)
+                errors.Add(SisbaseResult.FromError($"{type} is not public"));
+
+            if (errors.Any())
+                return errors;
+
+            return new List<SisbaseResult> { SisbaseResult.FromSucess() };
         }
 
         internal bool IsConfigDisabled(BaseSystem system) {
