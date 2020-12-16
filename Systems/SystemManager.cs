@@ -216,6 +216,9 @@ namespace sisbase.Systems {
             if (type.IsNotPublic)
                 errors.Add(SisbaseResult.FromError($"{type} is not public"));
 
+            if (type.IsAbstract)
+                errors.Add(SisbaseResult.FromError($"{type} is abstract"));
+
             if (errors.Any())
                 return errors;
 
