@@ -24,7 +24,7 @@ namespace sisbase.Systems {
         /// If a system is enabled, the SystemManager will attempt to load it. Otherwise it will be skipped. <br></br>
         /// This flag can be set on the generated config file or via the provided commands, if those are enabled.
         /// </summary>
-        public bool Enabled;
+        public bool Enabled = true;
 
         /// <summary>
         /// A Task that will be executed after the preconditions pass, if <see cref="CheckPreconditions"/> is overriten by the user.
