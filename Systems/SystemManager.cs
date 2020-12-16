@@ -63,6 +63,7 @@ namespace sisbase.Systems {
             if (!result.IsSucess) return result;
 
             if (IsConfigDisabled(system)) {
+                system.Enabled = false;
                 DisabledSystems.AddOrUpdate(type, system, (type, oldValue) => system);
                 return SisbaseResult.FromError($"{system} is disabled in config @ {config.Path}");
             }
