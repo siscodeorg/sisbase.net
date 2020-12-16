@@ -42,6 +42,22 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        public async Task<SisbaseResult> InstallSystemAsync<T>() where T : BaseSystem {
+            var type = typeof(T);
+            var query = IsValidType(type);
+
+            foreach (var result in query) {
+                if (!result.IsSucess)
+                    Logger.Error("SystemManager", result.Error);
+            }
+
+            if(query.All(x => x.IsSucess)) {
+                return await LoadType(type);
+            } else {
+                return SisbaseResult.FromError(string.Join('\n', query.Select(c => c.Error)));
+            }
+        }
+
         internal async Task<SisbaseResult> LoadType(Type type) {
             if (LoadedSystems.ContainsKey(type))
                 return SisbaseResult.FromSucess();
