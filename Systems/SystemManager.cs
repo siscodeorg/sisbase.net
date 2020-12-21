@@ -243,6 +243,9 @@ namespace sisbase.Systems {
             return new List<SisbaseResult> { SisbaseResult.FromSucess() };
         }
 
+        internal Timer GenerateTimer(Sheduler sheduler) =>
+            new Timer(new TimerCallback(x => sheduler.RunContinuously()), null, TimeSpan.FromSeconds(1), sheduler.Timeout);
+
         internal static List<SystemExpansion> GetExpansions(Type type)
             => type.GetInterfaces().Where(t => t is SystemExpansion).Select(x => (SystemExpansion) x).ToList();
 
