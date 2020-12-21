@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace sisbase.Systems.Expansions {
-    public interface Sheduler {
+    public interface Sheduler : SystemExpansion {
         TimeSpan Timeout { get; }
         Action RunContinuously { get; }
     }
