@@ -1,4 +1,6 @@
 ﻿using sisbase.Configuration;
+using sisbase.Systems.Expansions;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,11 @@ namespace sisbase.Systems {
         /// This flag can be set on the generated config file or via the provided commands, if those are enabled.
         /// </summary>
         public bool Enabled = true;
+
+        /// <summary>
+        /// All expansions loaded on the system
+        /// </summary>
+        public List<SystemExpansion> Expansions { get; internal set; }
 
         /// <summary>
         /// A Task that will be executed after the preconditions pass, if <see cref="CheckPreconditions"/> is overriten by the user.
