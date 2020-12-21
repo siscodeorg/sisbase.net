@@ -72,6 +72,7 @@ namespace sisbase.Systems {
                 system = InitalLoadType(type);
             }
 
+            system.Expansions = GetExpansions(type);
             return await LoadSystem(type, system);
         }
 
