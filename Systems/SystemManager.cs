@@ -101,6 +101,17 @@ namespace sisbase.Systems {
                 await clientSystem.ApplyToClient(client);
             }
 
+            if (system.HasExpansion<Sheduler>()) {
+                var sheduler = system.GetExpansion<Sheduler>();
+                var timer = GenerateTimer(sheduler);
+
+                if(timers.TryAdd(system, timer)) {
+                    Logger.Warn("SystemManager", $"Scheduler expansion loaded for {system.Name}.");
+                } else {
+                    Logger.Error("SystemManager", $"An error has occoured while loading the sheduler expansion on {system.Name}.");
+                }
+            }
+
             LoadedSystems.TryAdd(type, system);
             return SisbaseResult.FromSucess();
         }
@@ -115,6 +126,15 @@ namespace sisbase.Systems {
             var check = IsValidType(type);
             if (check.Any(x => !x.IsSucess))
                 return SisbaseResult.FromError(string.Join('\n', check.Select(c => c.Error)));
+
+            if (system.HasExpansion<Sheduler>()) {
+                timers[system].Dispose();
+                if(timers.TryRemove(system, out var _)) {
+                    Logger.Warn("SystemManager", $"Scheduler expansion unloaded for {system.Name}.");
+                } else {
+                    Logger.Error("SystemManager", $"An error has occoured while unloading the sheduler expansion on {system.Name}.");
+                }
+            }
 
             await system.Deactivate();
 
