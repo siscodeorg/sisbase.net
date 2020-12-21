@@ -3,6 +3,7 @@ using sisbase.CommandsNext;
 using sisbase.Common;
 using sisbase.Configuration;
 using sisbase.Logging;
+using sisbase.Systems.Expansions;
 
 using System;
 using System.Collections.Concurrent;
@@ -240,6 +241,9 @@ namespace sisbase.Systems {
 
             return new List<SisbaseResult> { SisbaseResult.FromSucess() };
         }
+
+        internal static List<SystemExpansion> GetExpansions(Type type)
+            => type.GetInterfaces().Where(t => t is SystemExpansion).Select(x => (SystemExpansion) x).ToList();
 
         internal bool IsConfigDisabled(BaseSystem system) {
             if (config.Systems.ContainsKey(system.GetSisbaseTypeName())) {
