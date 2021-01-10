@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GitInfo;SetVersion">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -13,5 +13,11 @@
 	</PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
   </ItemGroup>
+
+  <Target Name="SetVersion">
+    <PropertyGroup>
+      <InformationalVersion>$(Version)-$(GitBranch)+$(GitCommit)</InformationalVersion>
+    </PropertyGroup>
+  </Target>
 
 </Project>
