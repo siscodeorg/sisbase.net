@@ -1,4 +1,5 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using sisbase.CommandsNext;
 using sisbase.Configuration;
 using System;
@@ -13,12 +14,14 @@ namespace sisbase {
         public DiscordSocketClient Client { get; internal init;}
         public MainConfig Config { get; internal init; }
         public SisbaseCommandSystem CommandSystem { get; internal init; }
-        internal PrefixResolver PrefixResolver { get; init; }
+        internal PrefixResolver PrefixResolver { get; set; }
 
         public SisbaseBot(DiscordSocketClient client, MainConfig config) {
             Client = client;
             Config = config;
             CommandSystem = new(Client);
+
+            PrefixResolver = new RealTimePrefixResolver(CommandSystem, Config.Data.Prefixes.ToArray());
         }
 
         public SisbaseBot(DiscordSocketClient client, FileInfo configFile) {
@@ -29,6 +32,8 @@ namespace sisbase {
             Config = new();
             Config.Create(configFile);
             CommandSystem = new(Client);
+
+            PrefixResolver = new RealTimePrefixResolver(CommandSystem, Config.Data.Prefixes.ToArray());
         }
     }
 }
