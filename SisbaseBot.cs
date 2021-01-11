@@ -27,7 +27,7 @@ namespace sisbase {
         }
 
         public SisbaseBot(DiscordSocketClient client, FileInfo configFile) {
-            if (configFile.Extension != "json") return;
+            if (configFile.Extension != ".json") return;
 
             Client = client;
 
