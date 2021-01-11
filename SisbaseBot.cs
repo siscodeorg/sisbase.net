@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,6 +40,9 @@ namespace sisbase {
         public void UsePrefixResolver(PrefixResolver resolver) {
             PrefixResolver = resolver;
         }
+
+        public Task InstallCommandsAsync(Assembly assembly)
+            => CommandSystem.InstallCommandsAsync(assembly);
 
         public async Task StartAsync() {
             CommandSystem._prefixResolver = PrefixResolver;
