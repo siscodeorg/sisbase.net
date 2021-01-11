@@ -35,5 +35,9 @@ namespace sisbase {
 
             PrefixResolver = new RealTimePrefixResolver(CommandSystem, Config.Data.Prefixes.ToArray());
         }
+
+        public void UsePrefixResolver(PrefixResolver resolver) {
+            PrefixResolver = resolver;
+        }
     }
 }
