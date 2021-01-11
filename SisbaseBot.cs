@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using sisbase.CommandsNext;
 using sisbase.Configuration;
 using System;
@@ -40,6 +41,9 @@ namespace sisbase {
         public void UsePrefixResolver(PrefixResolver resolver) {
             PrefixResolver = resolver;
         }
+
+        public void WithServices(Action<IServiceCollection> Services)
+            => Services?.Invoke(CommandSystem._collection);
 
         public Task InstallCommandsAsync(Assembly assembly)
             => CommandSystem.InstallCommandsAsync(assembly);
