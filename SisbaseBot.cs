@@ -39,5 +39,15 @@ namespace sisbase {
         public void UsePrefixResolver(PrefixResolver resolver) {
             PrefixResolver = resolver;
         }
+
+        public async Task StartAsync() {
+            CommandSystem._prefixResolver = PrefixResolver;
+
+            Client.Log += async (msg) => { Console.WriteLine(msg.ToString()); };
+            await Client.LoginAsync(TokenType.Bot, Config.Data.Token);
+            await Client.StartAsync();
+            //Ugly Workaround until ConcurrencyUtils is ported.
+            await Task.Delay(-1);
+        }
     }
 }
