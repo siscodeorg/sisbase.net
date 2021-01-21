@@ -22,7 +22,7 @@ namespace sisbase.Configuration {
             }
             Update();
         }
-        public void Update() => File.WriteAllText(Path, JsonConvert.SerializeObject(this));
+        public void Update() => File.WriteAllText(Path, JsonConvert.SerializeObject(this, Formatting.Indented));
 
     }
 
