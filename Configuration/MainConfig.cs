@@ -29,9 +29,9 @@ namespace sisbase.Configuration {
     public record MainConfigData {
         [JsonProperty] internal string Token { get; init; }
         [JsonProperty] public ulong MasterId { get; set; }
-        [JsonProperty] public List<ulong> PuppetId { get; set; }
-        [JsonProperty] public List<string> Prefixes { get; set; }
-        [JsonProperty] internal Dictionary<string, object> CustomSettings { get; set; }
+        [JsonProperty] public List<ulong> PuppetId { get; set; } = new();
+        [JsonProperty] public List<string> Prefixes { get; set; } = new();
+        [JsonProperty] internal Dictionary<string, object> CustomSettings { get; set; } = new();
         public MainConfigData(string token) => Token = token;
     }
 }
