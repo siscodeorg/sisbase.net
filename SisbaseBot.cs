@@ -3,6 +3,8 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using sisbase.CommandsNext;
 using sisbase.Configuration;
+using sisbase.Systems;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,7 @@ namespace sisbase {
         public MainConfig Config { get; internal init; }
         public SisbaseCommandSystem CommandSystem { get; internal init; }
         internal PrefixResolver PrefixResolver { get; set; }
+        public SystemManager Systems { get; internal set; }
 
         public SisbaseBot(DiscordSocketClient client, MainConfig config) {
             Client = client;
@@ -42,11 +45,18 @@ namespace sisbase {
             PrefixResolver = resolver;
         }
 
+        public void UseSystemsApi(SystemConfig config) {
+            Systems = new(Client, config, CommandSystem);
+        }
+
         public void WithServices(Action<IServiceCollection> Services)
             => Services?.Invoke(CommandSystem._collection);
 
         public Task InstallCommandsAsync(Assembly assembly)
             => CommandSystem.InstallCommandsAsync(assembly);
+
+        public Task InstallSystemsAsync(Assembly assembly)
+            => Systems.InstallSystemsAsync(assembly);
 
         public async Task StartAsync() {
             CommandSystem._prefixResolver = PrefixResolver;
