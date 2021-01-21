@@ -12,10 +12,7 @@ namespace sisbase.Systems {
             => $"{system.GetType().Assembly.GetName().Name}::{system.GetType().FullName}";
 
         public static bool HasExpansion<T>(this BaseSystem system) where T : SystemExpansion
-            => system.Expansions.Any(x => x is T);
-
-        public static T GetExpansion<T>(this BaseSystem system) where T : SystemExpansion
-            => (T) system.Expansions.First(x => x is T);
+            => system is T;
 
     }
 }

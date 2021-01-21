@@ -71,8 +71,7 @@ namespace sisbase.Systems {
             else {
                 system = InitalLoadType(type);
             }
-
-            system.Expansions = GetExpansions(type);
+            system.Expansions = new();
             return await LoadSystem(type, system);
         }
 
@@ -102,14 +101,17 @@ namespace sisbase.Systems {
             }
 
             if (system.HasExpansion<Sheduler>()) {
-                var sheduler = system.GetExpansion<Sheduler>();
+                var sheduler = (Sheduler)system;
+
                 var timer = GenerateTimer(sheduler);
 
-                if(timers.TryAdd(system, timer)) {
+                if (timers.TryAdd(system, timer)) {
                     Logger.Warn("SystemManager", $"Scheduler expansion loaded for {system.Name}.");
                 } else {
                     Logger.Error("SystemManager", $"An error has occoured while loading the sheduler expansion on {system.Name}.");
                 }
+
+                system.Expansions.Add(sheduler);
             }
 
             LoadedSystems.TryAdd(type, system);
@@ -266,8 +268,6 @@ namespace sisbase.Systems {
         internal Timer GenerateTimer(Sheduler sheduler) =>
             new Timer(new TimerCallback(x => sheduler.RunContinuously()), null, TimeSpan.FromSeconds(1), sheduler.Timeout);
 
-        internal static List<SystemExpansion> GetExpansions(Type type)
-            => type.GetInterfaces().Where(t => t is SystemExpansion).Select(x => (SystemExpansion) x).ToList();
 
         internal bool IsConfigDisabled(BaseSystem system) {
             if (config.Systems.ContainsKey(system.GetSisbaseTypeName())) {
