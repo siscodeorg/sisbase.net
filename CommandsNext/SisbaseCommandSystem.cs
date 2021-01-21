@@ -21,14 +21,14 @@ namespace sisbase.CommandsNext {
         public SisbaseCommandSystem(DiscordSocketClient client) {
             _client = client;
             _prefixResolver = new RealTimePrefixResolver(this);
-            _provider = InitialServiceCollection.BuildServiceProvider();
+            _provider = initialServiceCollection.BuildServiceProvider();
         }
 
         public SisbaseCommandSystem(DiscordSocketClient client, SisbaseCommandSystemConfiguration config) {
             _client = client;
             _prefixResolver = config.PrefixResolver ?? new RealTimePrefixResolver(this);
-            config.Services?.Invoke(InitialServiceCollection);
-            _provider = InitialServiceCollection.BuildServiceProvider();
+            config.Services?.Invoke(initialServiceCollection);
+            _provider = initialServiceCollection.BuildServiceProvider();
         }
 
         public async Task InstallCommandsAsync(Assembly assembly) {
@@ -41,7 +41,7 @@ namespace sisbase.CommandsNext {
             var argPos = await _prefixResolver.GetArgumentPositionAsync(msg);
             if (argPos == 0) return;
             var ctx = new SocketCommandContext(_client, msg);
-            var commands = _commandService.Search(message.Content.Substring(argPos));
+            var commands = _commandService.Search(message.Content[argPos..]);
             var (response, command) = await Ugly.ValidateAndGetBestMatch(commands, ctx, _provider);
             if (!response.IsSuccess) return;
             if (response is not ParseResult parse) return;
@@ -49,7 +49,7 @@ namespace sisbase.CommandsNext {
             await command.Value.ExecuteAsync(sctx, parse, _provider);
         }
 
-        internal IServiceCollection InitialServiceCollection => _collection
+        internal IServiceCollection initialServiceCollection => _collection
             .AddSingleton(_client)
             .AddSingleton(_commandService);
     }
