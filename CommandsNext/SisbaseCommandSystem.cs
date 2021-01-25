@@ -51,6 +51,7 @@ namespace sisbase.CommandsNext {
 
         internal IServiceCollection initialServiceCollection => _collection
             .AddSingleton(_client)
+            .AddSingleton(this)
             .AddSingleton(_commandService);
     }
 }
