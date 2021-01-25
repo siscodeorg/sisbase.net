@@ -55,4 +55,11 @@ namespace sisbase.TestBot {
             await ReplyAsync($"yay! you called the useful command. number is {r.Next(0-yay, yay)}.");
         }
     }
+
+    public class HelpEmbedCommand : ModuleBase<SisbaseCommandContext> {
+        public SisbaseCommandSystem system { get; set; }
+        [Command("help")]
+        public async Task HelpEmbed()
+            => await ReplyAsync(embed: await EmbedBase.HelpEmbedAsync(system, Context));
+    }
 }
