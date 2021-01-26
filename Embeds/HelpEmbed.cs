@@ -18,6 +18,7 @@ namespace sisbase.Embeds {
             var formattedTopLevel = toplevel.Select(x => $"`{x.Aliases[0]}`").Distinct();
 
             EmbedBuilder embed = new();
+            embed.WithFooter($"「sisbase」・ {VersionUtils.GetVersion()}");
             embed.WithColor(Color.DarkMagenta);
             embed.WithAuthor("Showing all available commands | Help");
 

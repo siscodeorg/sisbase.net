@@ -18,6 +18,7 @@ namespace sisbase.Embeds {
             var strings = commands.Select(x => FormatSubcommand(x, name));
 
             EmbedBuilder embed = new();
+            embed.WithFooter($"「sisbase」・ {VersionUtils.GetVersion()}");
             embed.WithColor(Color.Purple);
             embed.WithAuthor($"Group : {name} | Help");
             if (!string.IsNullOrWhiteSpace(summary)) embed.WithDescription(summary);
