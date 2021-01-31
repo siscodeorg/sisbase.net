@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace sisbase.Systems.Attributes {
-    public class DependsAttribute {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class DependsAttribute : Attribute {
     }
 }
