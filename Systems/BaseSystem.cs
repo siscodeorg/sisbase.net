@@ -51,5 +51,6 @@ namespace sisbase.Systems {
         public virtual async Task<bool> CheckPreconditions() => true;
 
         internal SystemData ToSystemData () => new(Name, Enabled);
+        internal IServiceProvider services;
     }
 }
