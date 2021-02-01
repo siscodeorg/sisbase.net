@@ -1,4 +1,8 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using sisbase.CommandsNext;
 using sisbase.Common;
 using sisbase.Configuration;
@@ -93,6 +97,9 @@ namespace sisbase.Systems {
             } else {
                 Logger.Log("SystemManager",$"Dependencies Loaded for {system.GetSisbaseTypeName()}");
             }
+
+            if (system.services != null)
+                Inject(system);
 
             if (!await system.CheckPreconditions()) {
                 UnloadedSystems.AddOrUpdate(type, system, (type, oldValue) => system);
@@ -219,6 +226,7 @@ namespace sisbase.Systems {
             var deps = GetDependencies(s);
             if (!deps.Any()) return SisbaseResult.FromSucess();
             else {
+                ServiceCollection collection = new();
                 var intersection = deps.Intersect(Stack);
                 if (intersection.Any()) return SisbaseResult.FromError(
                     $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
@@ -234,13 +242,16 @@ namespace sisbase.Systems {
                         + $" Dependency {dep.Name} errored while loading. \n Error(s) : {result.Error}");
 
                     var sys = LoadedSystems[dep];
+                    collection.AddSingleton(dep,sys);
                     var innerDep = GetDependencies(sys);
                     var newStack = Stack;
                     newStack.Add(s.GetType());
 
+                    s.services = collection.BuildServiceProvider();
                     if (!innerDep.Any()) return SisbaseResult.FromSucess();
                     return await CheckDependencies(sys, newStack);
                 }
+
                 return SisbaseResult.FromSucess();
             }
         }
@@ -249,6 +260,16 @@ namespace sisbase.Systems {
             var attrib = s.GetType().GetCustomAttribute<DependsAttribute>();
             if(attrib == null) return new();
             return attrib.Systems;
+        }
+
+        internal void Inject(BaseSystem system) {
+            var type = system.GetType().GetTypeInfo();
+            var injectableProperties = ReflectionUtils.GetProperties(type);
+            foreach (var property in injectableProperties) {
+                var instance = system.services.GetService(property.PropertyType);
+                if (instance == null) continue;
+                property.SetValue(system, instance);
+            }
         }
 
         internal async Task ReloadCommandSystem() {
