@@ -8,6 +8,7 @@ using Discord;
 using Discord.Commands;
 
 using sisbase.CommandsNext;
+using sisbase.Common;
 
 namespace sisbase.Embeds {
     public static partial class EmbedBase {
