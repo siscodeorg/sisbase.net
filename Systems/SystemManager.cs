@@ -264,7 +264,7 @@ namespace sisbase.Systems {
 
         internal void Inject(BaseSystem system) {
             var type = system.GetType().GetTypeInfo();
-            var injectableProperties = ReflectionUtils.GetProperties(type);
+            var injectableProperties = ReflectionUtils.GetInjectableProperties(type);
             foreach (var property in injectableProperties) {
                 var instance = system.services.GetService(property.PropertyType);
                 if (instance == null) continue;

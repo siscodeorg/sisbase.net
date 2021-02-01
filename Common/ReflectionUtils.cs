@@ -12,7 +12,7 @@ namespace sisbase.Common {
 
         private static readonly TypeInfo ObjectTypeInfo = typeof(object).GetTypeInfo();
 
-        internal static PropertyInfo[] GetProperties(TypeInfo ownerType) {
+        internal static PropertyInfo[] GetInjectableProperties(TypeInfo ownerType) {
             var result = new List<PropertyInfo>();
             while (ownerType != ObjectTypeInfo) {
                 foreach (var prop in ownerType.DeclaredProperties) {
