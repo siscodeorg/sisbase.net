@@ -3,6 +3,7 @@ using sisbase.CommandsNext;
 using sisbase.Common;
 using sisbase.Configuration;
 using sisbase.Logging;
+using sisbase.Systems.Attributes;
 using sisbase.Systems.Expansions;
 
 using System;
@@ -84,6 +85,13 @@ namespace sisbase.Systems {
                 system.Enabled = false;
                 DisabledSystems.AddOrUpdate(type, system, (type, oldValue) => system);
                 return SisbaseResult.FromError($"{system} is disabled in config @ {config.Path}");
+            }
+
+            var depChecker = await CheckDependencies(system, new());
+            if (!depChecker.IsSucess) {
+                return depChecker;
+            } else {
+                Logger.Log("SystemManager",$"Dependencies Loaded for {system.GetSisbaseTypeName()}");
             }
 
             if (!await system.CheckPreconditions()) {
@@ -205,6 +213,42 @@ namespace sisbase.Systems {
             config.Update();
 
             Logger.Log("SystemManager", $"Config File @{config.Path} updated");
+        }
+
+        internal async Task<SisbaseResult> CheckDependencies(BaseSystem s, List<Type> Stack) {
+            var deps = GetDependencies(s);
+            if (!deps.Any()) return SisbaseResult.FromSucess();
+            else {
+                var intersection = deps.Intersect(Stack);
+                if (intersection.Any()) return SisbaseResult.FromError(
+                    $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
+                    $"{s.GetSisbaseTypeName()} -> {string.Join(",",intersection)}\n" +
+                    $"{string.Join(",", intersection)} -> {s.GetSisbaseTypeName()}"
+                    );
+
+                foreach(var dep in deps) {
+                    var result = await LoadType(dep);
+
+                    if (!result.IsSucess) return SisbaseResult.FromError(
+                        $"Error while loading dependencies for {s.GetSisbaseTypeName()}.\n"
+                        + $" Dependency {dep.Name} errored while loading. \n Error(s) : {result.Error}");
+
+                    var sys = LoadedSystems[dep];
+                    var innerDep = GetDependencies(sys);
+                    var newStack = Stack;
+                    newStack.Add(s.GetType());
+
+                    if (!innerDep.Any()) return SisbaseResult.FromSucess();
+                    return await CheckDependencies(sys, newStack);
+                }
+                return SisbaseResult.FromSucess();
+            }
+        }
+
+        internal List<Type> GetDependencies(BaseSystem s) {
+            var attrib = s.GetType().GetCustomAttribute<DependsAttribute>();
+            if(attrib == null) return new();
+            return attrib.Systems;
         }
 
         internal async Task ReloadCommandSystem() {
