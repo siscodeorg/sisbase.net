@@ -8,6 +8,7 @@ using sisbase.Common;
 using sisbase.Configuration;
 using sisbase.Logging;
 using sisbase.Systems.Attributes;
+using sisbase.Systems.Enums;
 using sisbase.Systems.Expansions;
 
 using System;
@@ -38,6 +39,12 @@ namespace sisbase.Systems {
             commandSystem = CommandSystem;
         }
 
+        public (T,SystemStatus) Get<T>() where T : BaseSystem {
+            var type = typeof(T);
+            var (system, status) = Get(type);
+            return ((T)system, status);
+        }
+
         public async Task<SisbaseResult> InstallSystemsAsync(Assembly assembly) {
             if (assemblyQueue.Contains(assembly))
                 return SisbaseResult.FromSucess();
@@ -62,6 +69,19 @@ namespace sisbase.Systems {
             } else {
                 return SisbaseResult.FromError(string.Join('\n', query.Select(c => c.Error)));
             }
+        }
+
+        internal (BaseSystem, SystemStatus) Get (Type type) {
+            if (LoadedSystems.ContainsKey(type))
+                return (LoadedSystems[type], SystemStatus.LOADED);
+
+            if (UnloadedSystems.ContainsKey(type))
+                return (UnloadedSystems[type], SystemStatus.UNLOADED);
+
+            if (DisabledSystems.ContainsKey(type))
+                return (DisabledSystems[type], SystemStatus.DISABLED);
+
+            return (null, SystemStatus.INVALID);
         }
 
         internal async Task<SisbaseResult> LoadType(Type type) {
