@@ -126,6 +126,8 @@ namespace sisbase.Systems {
                 Logger.Log("SystemManager",$"Dependencies Loaded for {system.GetSisbaseTypeName()}");
             }
 
+            LoadImports(system, new());
+
             if (system.services != null)
                 Inject(system);
 
