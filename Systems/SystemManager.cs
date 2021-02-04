@@ -290,6 +290,12 @@ namespace sisbase.Systems {
             return attrib.Systems;
         }
 
+        internal List<Type> GetImports(BaseSystem s) {
+            var attrib = s.GetType().GetCustomAttribute<UsesAttribute>();
+            if (attrib == null) return new();
+            return attrib.types;
+        }
+
         internal void Inject(BaseSystem system) {
             var type = system.GetType().GetTypeInfo();
             var injectableProperties = ReflectionUtils.GetInjectableProperties(type);
