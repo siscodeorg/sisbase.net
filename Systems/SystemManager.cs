@@ -284,6 +284,21 @@ namespace sisbase.Systems {
             }
         }
 
+        internal SisbaseResult LoadImports(BaseSystem s, List<Type> stack) {
+            var imports = GetImports(s);
+            if (!imports.Any()) return SisbaseResult.FromSucess();
+            s.collection ??= new ServiceCollection();
+            foreach (var import in imports) {
+                var service = provider.GetService(import);
+                if (service == null) throw new InvalidOperationException($"SystemManager's ServiceProvider doesn't provide a {import.FullName} instance.\n" +
+                    $"Have you forgotten to add it to the provider.\n" +
+                    $"Tip : SystemManager#WithServices()");
+                s.collection.AddSingleton(import, service);
+            }
+            s.services = s.collection.BuildServiceProvider();
+            return SisbaseResult.FromSucess();
+        }
+
         internal List<Type> GetDependencies(BaseSystem s) {
             var attrib = s.GetType().GetCustomAttribute<DependsAttribute>();
             if(attrib == null) return new();
