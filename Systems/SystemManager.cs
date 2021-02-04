@@ -73,6 +73,12 @@ namespace sisbase.Systems {
             }
         }
 
+        public void WithServices(Action<IServiceCollection> action) {
+            services ??= new ServiceCollection();
+            action?.Invoke(services);
+            provider = services.BuildServiceProvider();
+        }
+
         internal (BaseSystem, SystemStatus) Get (Type type) {
             if (LoadedSystems.ContainsKey(type))
                 return (LoadedSystems[type], SystemStatus.LOADED);
