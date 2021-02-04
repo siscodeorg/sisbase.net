@@ -28,6 +28,8 @@ namespace sisbase.Systems {
         internal ConcurrentDictionary<BaseSystem, Timer> timers { get; } = new();
         internal ConcurrentQueue<Assembly> assemblyQueue { get; } = new();
         internal ConcurrentBag<Assembly> loadedAssemblies { get; } = new();
+        internal IServiceProvider provider;
+        internal IServiceCollection services;
 
         public ConcurrentDictionary<Type, BaseSystem> LoadedSystems { get; } = new();
         public ConcurrentDictionary<Type, BaseSystem> UnloadedSystems { get; } = new();
