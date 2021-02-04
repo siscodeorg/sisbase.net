@@ -248,7 +248,7 @@ namespace sisbase.Systems {
             var deps = GetDependencies(s);
             if (!deps.Any()) return SisbaseResult.FromSucess();
             else {
-                ServiceCollection collection = new();
+                s.collection ??= new ServiceCollection();
                 var intersection = deps.Intersect(Stack);
                 if (intersection.Any()) return SisbaseResult.FromError(
                     $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
@@ -264,12 +264,12 @@ namespace sisbase.Systems {
                         + $" Dependency {dep.Name} errored while loading. \n Error(s) : {result.Error}");
 
                     var sys = LoadedSystems[dep];
-                    collection.AddSingleton(dep,sys);
+                    s.collection.AddSingleton(dep,sys);
                     var innerDep = GetDependencies(sys);
                     var newStack = Stack;
                     newStack.Add(s.GetType());
 
-                    s.services = collection.BuildServiceProvider();
+                    s.services = s.collection.BuildServiceProvider();
                     if (!innerDep.Any()) return SisbaseResult.FromSucess();
                     return await CheckDependencies(sys, newStack);
                 }
