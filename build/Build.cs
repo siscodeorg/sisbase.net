@@ -27,10 +27,14 @@ partial class Build : NukeBuild
 
     [Solution] readonly Solution Solution;
 
+    AbsolutePath ArtifactsPath = RootDirectory / "artifacts";
+    AbsolutePath TestBotPath = RootDirectory / "run";
+
     Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
+            EnsureCleanDirectory(ArtifactsPath);
         });
 
     Target Restore => _ => _
