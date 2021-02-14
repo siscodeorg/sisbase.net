@@ -35,5 +35,16 @@ namespace Data.Git.Extensions {
 
             return new BranchInfo(BranchName, BranchKind.UNCATEGORIZED);
         }
+
+        public static CommitInfo ToCommitInfo(this string CommitMessage) {
+            var words = CommitMessage.Split(" ");
+            if (CommitMessage.Contains("pull request")) {
+                return new(words.Last(), CommitKind.PULL_REQUEST, int.Parse(words[3][1..]));
+            } else if (CommitMessage.Contains("Merge branch")) {
+                return new(words[2][1..^1], CommitKind.MERGE);
+            } else {
+                return new(CommitMessage, CommitKind.COMMIT);
+            }
+        }
     }
 }
