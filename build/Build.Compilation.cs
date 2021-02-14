@@ -47,5 +47,11 @@ partial class Build : NukeBuild {
                 .EnableNoRestore()
             );
         });
+
+    Target CompileBot => _ => _
+        .DependsOn(Restore)
+        .Executes(() => {
+
+        });
 }
 
