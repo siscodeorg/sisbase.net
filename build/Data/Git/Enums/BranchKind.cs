@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Data.Git.Enums {
     public enum BranchKind {
-        FIX, ISSUE_FIX, FEATURE, CUSTOM_TAG, UNCATEGORIZED
+        PULL_REQUEST, FIX, ISSUE_FIX, FEATURE, CUSTOM_TAG, UNCATEGORIZED
     }
 }
