@@ -33,8 +33,19 @@ partial class Build : NukeBuild {
         });
 
     Target Compile => _ => _
+        .DependsOn(GenerateVersion, Restore)
         .Executes(() => {
+            DotNetBuild(_ => _
+                .SetProjectFile(Solution.GetProject("sisbase"))
 
+                .SetAssemblyVersion(FileVersion)
+                .SetFileVersion(FileVersion)
+                .SetInformationalVersion(InformationalVersion)
+
+                .SetConfiguration(Configuration)
+
+                .EnableNoRestore()
+            );
         });
 }
 
