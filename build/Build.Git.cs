@@ -22,9 +22,11 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using Data.Git.Enums;
+using Nuke.Common.Git;
 
 partial class Build : NukeBuild {
     [PathExecutable] readonly Tool Git;
+    [GitRepository] readonly GitRepository Repo;
 
     const string DevelopBranch = "beta";
     const string AlphaBranch = "alpha";
