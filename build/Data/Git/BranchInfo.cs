@@ -12,5 +12,23 @@ namespace Data.Git {
         public string Tag { get; set; }
         public int IssueID { get; set; }
         public BranchKind Kind { get; set; }
+
+        public BranchInfo(string branch, BranchKind kind, int issue) {
+            Name = branch;
+            Kind = kind;
+            IssueID = issue;
+        }
+
+        public BranchInfo(string branch, BranchKind kind) {
+            Name = branch;
+            Kind = kind;
+            IssueID = 0;
+        }
+        public BranchInfo(string branch, BranchKind kind, string tag) {
+            Name = branch;
+            Kind = kind;
+            IssueID = 0;
+            Tag = tag;
+        }
     }
 }
