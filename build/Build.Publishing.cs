@@ -13,6 +13,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Nuke.Common.Utilities;
 using Nuke.Common.Utilities.Collections;
 
 using static Nuke.Common.EnvironmentInfo;
@@ -24,7 +25,7 @@ partial class Build : NukeBuild {
 
     [CI] readonly GitHubActions GithubActions;
 
-    [Parameter] readonly string GitHubToken;
+    [Parameter] readonly string GithubToken;
     [Parameter] readonly string NugetToken;
     [Parameter] readonly string DiscordWebhook;
 
@@ -52,7 +53,35 @@ partial class Build : NukeBuild {
         });
 
     Target Publish => _ => _
+        .DependsOn(Pack)
+        .Requires(() => IsOriginalRepository)
+        .Requires(() => !NugetToken.IsNullOrEmpty() || !IsOriginalRepository)
+        .Requires(() => !GithubToken.IsNullOrEmpty() || !IsOriginalRepository)
+        .Requires(() => GitVersion.BranchName == DevelopBranch || GitVersion.BranchName == ReleaseBranch)
         .Executes(() => {
+            if(IsDevelopBranch && !GithubToken.IsNullOrEmpty()) {
+                DotNetNuGetAddSource(_ => _
+                    .SetSource(GithubPackageSource)
+                    .SetUsername(GithubActions.GitHubActor)
+                    .SetPassword(GithubToken)
+                );
+            }
 
+            if (IsDevelopBranch) {
+                //Release to Github.
+                DotNetNuGetPush(_ => _
+                    .SetSource(GithubPackageSource)
+                    .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                        .SetTargetPath(v)
+                    )
+                );
+            } else {
+                DotNetNuGetPush(_ => _
+                   .SetSource(NugetPackageSource)
+                   .SetApiKey(NugetToken)
+                   .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                       .SetTargetPath(v))
+               );
+            }
         });
 }
