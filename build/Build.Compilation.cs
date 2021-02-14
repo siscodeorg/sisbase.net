@@ -51,7 +51,15 @@ partial class Build : NukeBuild {
     Target CompileBot => _ => _
         .DependsOn(Restore)
         .Executes(() => {
+            DotNetBuild(_ => _
+                .SetProjectFile(Solution.GetProject("sisbase.TestBot"))
 
+                .SetConfiguration(Configuration)
+
+                .EnableNoRestore()
+
+                .SetOutputDirectory(TestBotPath)
+            );
         });
 }
 
