@@ -15,5 +15,7 @@ namespace Data.Git.Extensions {
 
         public static string GetCustomTag(this string BranchName)
             => BranchName.Split("/")[0];
+        public static string GetBranchName(this string BranchName)
+            => string.Join("/", BranchName.Split("/")[1..]);
     }
 }
