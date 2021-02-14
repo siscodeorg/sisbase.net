@@ -19,6 +19,9 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
+    Target Compile => _ => _
+        .Executes(() => {
 
+        });
 }
 

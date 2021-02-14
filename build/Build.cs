@@ -40,17 +40,10 @@ partial class Build : NukeBuild
         });
 
     Target Restore => _ => _
-        .Executes(() =>
-        {
+        .Executes(() => {
             DotNetRestore(_ => _
                 .SetProjectFile(Solution)
             );
-        });
-
-    Target Compile => _ => _
-        .DependsOn(Restore)
-        .Executes(() =>
-        {
         });
 
 }
