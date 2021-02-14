@@ -27,5 +27,16 @@ partial class Build : NukeBuild {
     const string ReleaseBranch = "release";
 
     const string FeaturePrefix = "feature";
+
+    bool CheckForBranch(string Name) {
+        bool result = false;
+        try {
+            Git($"rev-parse --verify --silent refs/heads/{Name}");
+            result = true;
+        } catch {
+            result = false;
+        }
+        return result;
+    }
 }
 
