@@ -21,7 +21,19 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
     Target Pack => _ => _
+        .DependsOn(Clean, Compile)
+        .Produces(ArtifactsPath / "*.nupkg")
         .Executes(() => {
+            DotNetPack(_ => _
+                .SetProject(Solution.GetProject("sisbase"))
 
+                .SetConfiguration(Configuration.Release)
+
+                .SetAssemblyVersion(FileVersion)
+                .SetFileVersion(FileVersion)
+                .SetInformationalVersion(InformationalVersion)
+
+                .SetOutputDirectory(ArtifactsPath)
+            );
         });
 }
