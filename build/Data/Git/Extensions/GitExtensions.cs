@@ -10,5 +10,7 @@ namespace Data.Git.Extensions {
             => BranchName.Contains($"feature/");
         public static bool IsFixBranch(this string BranchName)
             => BranchName.Contains("fix/") || BranchName.Contains("bug/");
+        public static bool HasCustomTag(this string BranchName)
+            => BranchName.Contains("/");
     }
 }
