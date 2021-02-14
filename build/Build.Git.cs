@@ -20,6 +20,12 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
+    [PathExecutable] readonly Tool Git;
 
+    const string DevelopBranch = "beta";
+    const string AlphaBranch = "alpha";
+    const string ReleaseBranch = "release";
+
+    const string FeaturePrefix = "feature";
 }
 
