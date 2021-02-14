@@ -11,5 +11,17 @@ namespace Data.Git {
         public string Branch { get; set; }
         public int PullRequestID { get; set; }
         public CommitKind Kind { get; set; }
+
+        internal CommitInfo(string branch, CommitKind kind) {
+            Branch = branch;
+            Kind = kind;
+            PullRequestID = 0;
+        }
+
+        internal CommitInfo(string branch, CommitKind kind, int pr) {
+            Branch = branch;
+            Kind = kind;
+            PullRequestID = pr;
+        }
     }
 }
