@@ -34,6 +34,15 @@ partial class Build : NukeBuild {
 
     List<CommitInfo> Commits;
 
+    Dictionary<BranchKind, List<BranchInfo>> Branches = new Dictionary<BranchKind, List<BranchInfo>> {
+        [BranchKind.CUSTOM_TAG] = new(),
+        [BranchKind.FEATURE] = new(),
+        [BranchKind.FIX] = new(),
+        [BranchKind.ISSUE_FIX] = new(),
+        [BranchKind.PULL_REQUEST] = new(),
+        [BranchKind.UNCATEGORIZED] = new()
+    };
+
     Target GetCommitInfo => _ => _
         .Executes(() => {
             var releaseBranchExists = CheckForBranch(ReleaseBranch);
@@ -48,6 +57,29 @@ partial class Build : NukeBuild {
             Logger.Info($"Commits loaded. Count : {Commits.Count} with \n" +
                $"- {Commits.Where(x => x.Kind == CommitKind.MERGE).Count()} Merges \n" +
                $"- {Commits.Where(x => x.Kind == CommitKind.PULL_REQUEST).Count()} PRs\n");
+        });
+
+    Target GetBranchInfo => _ => _
+        .DependsOn(GetCommitInfo)
+        .Executes(() => {
+            foreach (var commit in Commits) {
+                if(commit.Kind == CommitKind.PULL_REQUEST) {
+                    BranchInfo branch = new(commit.Branch,BranchKind.PULL_REQUEST);
+                    branch.PullRequestID = commit.PullRequestID;
+                    Branches[BranchKind.PULL_REQUEST].Add(branch);
+                } else {
+                    var branch = commit.Branch.ToBranchInfo();
+                    Branches[branch.Kind].Add(branch);
+                }
+            }
+
+            Logger.Info($"Branches loaded.\n" +
+               $"- {Branches[BranchKind.CUSTOM_TAG].Count()} Custom \n" +
+               $"- {Branches[BranchKind.PULL_REQUEST].Count()} PRs\n" +
+               $"- {Branches[BranchKind.FEATURE].Count()} Features\n" +
+               $"- {Branches[BranchKind.FIX].Count()} Bugfixes\n" +
+               $"- {Branches[BranchKind.ISSUE_FIX].Count()} Issues Fixed\n" +
+               $"- {Branches[BranchKind.UNCATEGORIZED].Count()} Miscelaneous");
         });
 
     bool CheckForBranch(string Name) {
