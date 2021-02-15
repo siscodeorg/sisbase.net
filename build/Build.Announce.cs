@@ -86,7 +86,7 @@ partial class Build : NukeBuild {
             var customTags = Categorize(Branches[BranchKind.CUSTOM_TAG]);
 
             foreach (var (tag, branches) in customTags) {
-                embed.AddField(tag, string.Join("\n", branches),true);
+                embed.AddField(tag.Capitalize(), string.Join("\n", branches),true);
             }
         }
     }
