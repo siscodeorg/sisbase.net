@@ -69,6 +69,8 @@ partial class Build : NukeBuild {
                 .SetAssemblyVersion(AssemblyVersion)
                 .SetFileVersion(FileVersion)
                 .SetInformationalVersion(InformationalVersion)
+                
+                .SetVersion(GitVersion.BranchName == ReleaseBranch ? AssemblyVersion : FileVersion)
 
                 .SetOutputDirectory(ArtifactsPath)
             );
