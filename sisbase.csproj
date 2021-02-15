@@ -9,6 +9,8 @@
     <Description>A library containing helpers for creating a discord bot on Discord.Net</Description>
     <Copyright>siscodeorg</Copyright>
     <PackageProjectUrl>https://github.com/siscodeorg/sisbase-discord.net</PackageProjectUrl>
+    <AssemblyName>sisbase.net</AssemblyName>
+    <Product>sisbase.net</Product>
   </PropertyGroup>
 
   <ItemGroup>
