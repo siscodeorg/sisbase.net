@@ -12,10 +12,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="artifacts\**" />
     <Compile Remove="build\**" />
     <Compile Remove="sisbase.TestBot\**" />
+    <EmbeddedResource Remove="artifacts\**" />
     <EmbeddedResource Remove="build\**" />
     <EmbeddedResource Remove="sisbase.TestBot\**" />
+    <None Remove="artifacts\**" />
     <None Remove="build\**" />
     <None Remove="sisbase.TestBot\**" />
   </ItemGroup>
