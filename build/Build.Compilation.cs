@@ -25,11 +25,13 @@ partial class Build : NukeBuild {
 
     string FileVersion;
     string InformationalVersion;
+    string AssemblyVersion;
 
     Target GenerateVersion => _ => _
         .Executes(() => {
             InformationalVersion = GitVersion.InformationalVersion;
             FileVersion = GitVersion.NuGetVersionV2;
+            AssemblyVersion = GitVersion.AssemblySemVer;
         });
 
     Target Compile => _ => _
@@ -38,7 +40,7 @@ partial class Build : NukeBuild {
             DotNetBuild(_ => _
                 .SetProjectFile(Solution.GetProject("sisbase"))
 
-                .SetAssemblyVersion(FileVersion)
+                .SetAssemblyVersion(AssemblyVersion)
                 .SetFileVersion(FileVersion)
                 .SetInformationalVersion(InformationalVersion)
 

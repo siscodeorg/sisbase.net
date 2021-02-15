@@ -44,7 +44,7 @@ partial class Build : NukeBuild {
 
                 .SetConfiguration(Configuration.Release)
 
-                .SetAssemblyVersion(FileVersion)
+                .SetAssemblyVersion(AssemblyVersion)
                 .SetFileVersion(FileVersion)
                 .SetInformationalVersion(InformationalVersion)
 
