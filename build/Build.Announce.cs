@@ -29,6 +29,43 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
 
+    void AddBranchInfo (EmbedBuilder embed) {
+        if (Branches[BranchKind.PULL_REQUEST].Any()) {
+            var data = Branches[BranchKind.PULL_REQUEST]
+                .Select(x => $"`{x.Name}` - [#{x.PullRequestID}]({Repo.HttpsUrl}/pull/{x.PullRequestID})");
+            embed.AddField("⭐ Pull Requests", string.Join("\n", data));
+        }
+
+        if (Branches[BranchKind.FEATURE].Any()) {
+            var data = Branches[BranchKind.FEATURE]
+                .Select(x => x.Name);
+            embed.AddField("📦 Features", string.Join("\n", data));
+        }
+
+        if (Branches[BranchKind.FIX].Any() || Branches[BranchKind.ISSUE_FIX].Any()) {
+            var data = Branches[BranchKind.FIX]
+                .Select(x => x.Name);
+            data = data.Concat(
+                    Branches[BranchKind.ISSUE_FIX].Select(x => $@"{x.Name} [(#{x.IssueID})]({Repo.HttpsUrl}/issue/{x.IssueID})")
+                );
+
+            embed.AddField("🐞 Bugfixes", string.Join("\n", data));
+        }
+
+        if (Branches[BranchKind.UNCATEGORIZED].Any()) {
+            var data = Branches[BranchKind.UNCATEGORIZED].Select(x => x.Name);
+            embed.AddField("📑 Uncategorized", string.Join("\n", data));
+        }
+
+        if (Branches[BranchKind.CUSTOM_TAG].Any()) {
+            var customTags = Categorize(Branches[BranchKind.CUSTOM_TAG]);
+
+            foreach (var (tag, branches) in customTags) {
+                embed.AddField(tag, string.Join("\n", branches));
+            }
+        }
+    }
+
     Dictionary<string, List<string>> Categorize(IEnumerable<BranchInfo> branches) {
         Dictionary<string, List<string>> result = new();
         foreach (var branch in branches) {
