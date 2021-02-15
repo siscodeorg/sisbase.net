@@ -59,13 +59,13 @@ partial class Build : NukeBuild {
         if (Branches[BranchKind.PULL_REQUEST].Any()) {
             var data = Branches[BranchKind.PULL_REQUEST]
                 .Select(x => $"`{x.Name}` - [#{x.PullRequestID}]({Repo.HttpsUrl}/pull/{x.PullRequestID})");
-            embed.AddField("⭐ Pull Requests", string.Join("\n", data));
+            embed.AddField("⭐ Pull Requests", string.Join("\n", data),true);
         }
 
         if (Branches[BranchKind.FEATURE].Any()) {
             var data = Branches[BranchKind.FEATURE]
                 .Select(x => x.Name);
-            embed.AddField("📦 Features", string.Join("\n", data));
+            embed.AddField("📦 Features", string.Join("\n", data), true);
         }
 
         if (Branches[BranchKind.FIX].Any() || Branches[BranchKind.ISSUE_FIX].Any()) {
@@ -74,19 +74,19 @@ partial class Build : NukeBuild {
             var issues = Branches[BranchKind.ISSUE_FIX]
                 .Select(x => $@"{x.Name} [(#{x.IssueID})]({Repo.HttpsUrl}/issue/{x.IssueID})");
             var data = fixes.Concat(issues);
-            embed.AddField("🐞 Bugfixes", string.Join("\n", data));
+            embed.AddField("🐞 Bugfixes", string.Join("\n", data), true);
         }
 
         if (Branches[BranchKind.UNCATEGORIZED].Any()) {
             var data = Branches[BranchKind.UNCATEGORIZED].Select(x => x.Name);
-            embed.AddField("📑 Uncategorized", string.Join("\n", data));
+            embed.AddField("📑 Uncategorized", string.Join("\n", data), true);
         }
 
         if (Branches[BranchKind.CUSTOM_TAG].Any()) {
             var customTags = Categorize(Branches[BranchKind.CUSTOM_TAG]);
 
             foreach (var (tag, branches) in customTags) {
-                embed.AddField(tag, string.Join("\n", branches));
+                embed.AddField(tag, string.Join("\n", branches),true);
             }
         }
     }
