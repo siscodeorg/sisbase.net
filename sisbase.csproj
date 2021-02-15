@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>sisbase</RootNamespace>
+    <PackageId>sisbase.net</PackageId>
+    <Title>sisbase for Discord.Net</Title>
+    <Authors>siscodeorg</Authors>
+    <Description>A library containing helpers for creating a discord bot on Discord.Net</Description>
+    <Copyright>siscodeorg</Copyright>
+    <PackageProjectUrl>https://github.com/siscodeorg/sisbase-discord.net</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
