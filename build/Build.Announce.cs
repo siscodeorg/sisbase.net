@@ -28,6 +28,32 @@ using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
+    Target Announce => _ => _
+    .TriggeredBy(Publish)
+    .DependsOn(GetBranchInfo)
+    .Requires(() => DiscordWebhook)
+    .Executes( async () => {
+        DiscordWebhookClient client = new(DiscordWebhook);
+
+        EmbedBuilder embed = new();
+        AddBranchInfo(embed);
+
+        if (IsDevelopBranch) {
+            embed
+            .WithAuthor("[sisbase-d.net] New BETA version released!", null, Repo.HttpsUrl)
+            .WithDescription($"Version : {FileVersion}")
+            .WithColor(Color.Red);
+            embed.WithFooter("This is a beta version, should be used for testing only. Don't run this in production unless recommended by the dev team.");
+
+        } else {
+            embed
+            .WithAuthor("[sisbase-d.net] New version released!", null, Repo.HttpsUrl)
+            .WithDescription($"Version : [{FileVersion}](https://www.nuget.org/packages/sisbase/)")
+            .WithColor(Color.Green);
+        }
+        await client.SendMessageAsync(embeds: new[] { embed.Build() });
+    });
+
 
     void AddBranchInfo (EmbedBuilder embed) {
         if (Branches[BranchKind.PULL_REQUEST].Any()) {
