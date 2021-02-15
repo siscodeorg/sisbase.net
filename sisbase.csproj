@@ -21,6 +21,9 @@
     <None Remove="artifacts\**" />
     <None Remove="build\**" />
     <None Remove="sisbase.TestBot\**" />
+    <Compile Remove="run\**" />
+    <EmbeddedResource Remove="run\**" />
+    <None Remove="run\**" />
   </ItemGroup>
 
   <ItemGroup>
