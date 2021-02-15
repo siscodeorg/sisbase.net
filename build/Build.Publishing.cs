@@ -21,6 +21,28 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
+[GitHubActions("publish",
+        GitHubActionsImage.UbuntuLatest,
+        OnPushBranches = new [] {"beta", "release"},
+        InvokedTargets = new [] {
+            nameof(Publish)
+        },
+        ImportSecrets = new [] {
+            nameof(DiscordWebhook),
+            nameof(NugetToken)
+        },
+        ImportGitHubTokenAs = nameof(GithubToken),
+        PublishArtifacts = false
+)]
+
+[GitHubActions("alpha",
+        GitHubActionsImage.UbuntuLatest,
+        OnPushBranches = new []{"alpha"},
+        InvokedTargets = new [] {
+            nameof(Pack)
+        },
+        ImportGitHubTokenAs = nameof(GithubToken)
+)]
 partial class Build : NukeBuild {
 
     [CI] readonly GitHubActions GithubActions;
