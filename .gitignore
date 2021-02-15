@@ -11,6 +11,8 @@
 /node_modules
 /wwwroot/node_modules
 
+### Build Script ###
+run/
 
 ### Rider ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
@@ -22,6 +24,8 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/
+
 
 # Generated files
 .idea/**/contentModel.xml
