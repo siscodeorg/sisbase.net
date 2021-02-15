@@ -69,12 +69,11 @@ partial class Build : NukeBuild {
         }
 
         if (Branches[BranchKind.FIX].Any() || Branches[BranchKind.ISSUE_FIX].Any()) {
-            var data = Branches[BranchKind.FIX]
+            var fixes = Branches[BranchKind.FIX]
                 .Select(x => x.Name);
-            data = data.Concat(
-                    Branches[BranchKind.ISSUE_FIX].Select(x => $@"{x.Name} [(#{x.IssueID})]({Repo.HttpsUrl}/issue/{x.IssueID})")
-                );
-
+            var issues = Branches[BranchKind.ISSUE_FIX]
+                .Select(x => $@"{x.Name} [(#{x.IssueID})]({Repo.HttpsUrl}/issue/{x.IssueID})");
+            var data = fixes.Concat(issues);
             embed.AddField("🐞 Bugfixes", string.Join("\n", data));
         }
 
