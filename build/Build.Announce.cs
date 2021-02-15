@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Data.Git;
+using Data.Git.Enums;
+
+using Discord;
+using Discord.Webhook;
+
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.GitHubActions;
@@ -23,5 +29,17 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 partial class Build : NukeBuild {
 
+    Dictionary<string, List<string>> Categorize(IEnumerable<BranchInfo> branches) {
+        Dictionary<string, List<string>> result = new();
+        foreach (var branch in branches) {
+            if (result.ContainsKey(branch.Tag)) {
+                result[branch.Tag].Add(branch.Name);
+            } else {
+                result.Add(branch.Tag, new());
+                result[branch.Tag].Add(branch.Name);
+            }
+        }
+        return result;
+    }
 }
 
