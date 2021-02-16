@@ -32,6 +32,10 @@ partial class Build : NukeBuild {
             InformationalVersion = GitVersion.InformationalVersion;
             FileVersion = GitVersion.NuGetVersionV2;
             AssemblyVersion = GitVersion.AssemblySemVer;
+            
+            Logger.Info($"InformationalVersion : {InformationalVersion}");
+            Logger.Info($"FileVersion : {FileVersion}");
+            Logger.Info($"AssemblyVersion : {AssemblyVersion}");
         });
 
     Target Compile => _ => _
