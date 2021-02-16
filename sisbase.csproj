@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GitInfo;SetVersion">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -9,27 +9,28 @@
     <Description>A library containing helpers for creating a discord bot on Discord.Net</Description>
     <Copyright>siscodeorg</Copyright>
     <PackageProjectUrl>https://github.com/siscodeorg/sisbase-discord.net</PackageProjectUrl>
+    <AssemblyName>sisbase.net</AssemblyName>
+    <Product>sisbase.net</Product>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="artifacts\**" />
+    <Compile Remove="build\**" />
     <Compile Remove="sisbase.TestBot\**" />
+    <EmbeddedResource Remove="artifacts\**" />
+    <EmbeddedResource Remove="build\**" />
     <EmbeddedResource Remove="sisbase.TestBot\**" />
+    <None Remove="artifacts\**" />
+    <None Remove="build\**" />
     <None Remove="sisbase.TestBot\**" />
+    <Compile Remove="run\**" />
+    <EmbeddedResource Remove="run\**" />
+    <None Remove="run\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.2.0" />
-	<PackageReference Include="GitInfo" Version="2.1.2">
-		<PrivateAssets>all</PrivateAssets>
-		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
   </ItemGroup>
-
-  <Target Name="SetVersion">
-    <PropertyGroup>
-      <InformationalVersion>$(Version)-$(GitBranch)+$(GitCommit)</InformationalVersion>
-    </PropertyGroup>
-  </Target>
 
 </Project>
