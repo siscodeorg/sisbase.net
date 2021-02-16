@@ -71,7 +71,10 @@ partial class Build : NukeBuild {
                 .SetInformationalVersion(InformationalVersion)
                 
                 .SetVersion(GitVersion.BranchName == ReleaseBranch ? AssemblyVersion : FileVersion)
-
+                
+                .SetRepositoryType("git")
+                .SetRepositoryUrl("https://github.com/siscodeorg/sisbase-discord.net")
+                
                 .SetOutputDirectory(ArtifactsPath)
             );
         });
