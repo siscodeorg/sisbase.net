@@ -25,7 +25,7 @@ using Data.Git.Enums;
 using Nuke.Common.Git;
 
 partial class Build : NukeBuild {
-    [PathExecutable] readonly Tool Git;
+    [PathExecutable("git")] readonly Tool Git;
     [GitRepository] readonly GitRepository Repo;
 
     const string DevelopBranch = "beta";

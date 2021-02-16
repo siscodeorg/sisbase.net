@@ -71,7 +71,10 @@ partial class Build : NukeBuild {
                 .SetInformationalVersion(InformationalVersion)
                 
                 .SetVersion(GitVersion.BranchName == ReleaseBranch ? AssemblyVersion : FileVersion)
-
+                
+                .SetRepositoryType("git")
+                .SetRepositoryUrl("https://github.com/siscodeorg/sisbase-discord.net")
+                
                 .SetOutputDirectory(ArtifactsPath)
             );
         });
@@ -88,14 +91,16 @@ partial class Build : NukeBuild {
                     .SetSource(GithubPackageSource)
                     .SetUsername(GithubActions.GitHubActor)
                     .SetPassword(GithubToken)
+                    .SetName("github")
+                    .EnableStorePasswordInClearText()
                 );
             }
 
             if (IsDevelopBranch) {
                 //Release to Github.
                 DotNetNuGetPush(_ => _
-                    .SetSource(GithubPackageSource)
-                    .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                    .SetSource("github")
+                    .CombineWith(ArtifactsPath.GlobFiles("*.nupkg"), (_, v) => _
                         .SetTargetPath(v)
                     )
                 );
@@ -103,7 +108,7 @@ partial class Build : NukeBuild {
                 DotNetNuGetPush(_ => _
                    .SetSource(NugetPackageSource)
                    .SetApiKey(NugetToken)
-                   .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                   .CombineWith(ArtifactsPath.GlobFiles("*.nupkg"), (_, v) => _
                        .SetTargetPath(v))
                );
             }
