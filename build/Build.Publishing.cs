@@ -96,7 +96,7 @@ partial class Build : NukeBuild {
                 //Release to Github.
                 DotNetNuGetPush(_ => _
                     .SetSource(GithubPackageSource)
-                    .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                    .CombineWith(ArtifactsPath.GlobFiles("*.nupkg"), (_, v) => _
                         .SetTargetPath(v)
                     )
                 );
@@ -104,7 +104,7 @@ partial class Build : NukeBuild {
                 DotNetNuGetPush(_ => _
                    .SetSource(NugetPackageSource)
                    .SetApiKey(NugetToken)
-                   .CombineWith(ArtifactsPath.GlobDirectories("*.nupkg"), (_, v) => _
+                   .CombineWith(ArtifactsPath.GlobFiles("*.nupkg"), (_, v) => _
                        .SetTargetPath(v))
                );
             }
