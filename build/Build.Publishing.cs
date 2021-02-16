@@ -88,6 +88,7 @@ partial class Build : NukeBuild {
                     .SetSource(GithubPackageSource)
                     .SetUsername(GithubActions.GitHubActor)
                     .SetPassword(GithubToken)
+                    .EnableStorePasswordInClearText()
                 );
             }
 
