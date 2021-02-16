@@ -88,6 +88,7 @@ partial class Build : NukeBuild {
                     .SetSource(GithubPackageSource)
                     .SetUsername(GithubActions.GitHubActor)
                     .SetPassword(GithubToken)
+                    .SetName("github")
                     .EnableStorePasswordInClearText()
                 );
             }
@@ -95,7 +96,7 @@ partial class Build : NukeBuild {
             if (IsDevelopBranch) {
                 //Release to Github.
                 DotNetNuGetPush(_ => _
-                    .SetSource(GithubPackageSource)
+                    .SetSource("github")
                     .CombineWith(ArtifactsPath.GlobFiles("*.nupkg"), (_, v) => _
                         .SetTargetPath(v)
                     )
