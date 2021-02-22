@@ -15,7 +15,7 @@ namespace sisbase.CommandsNext.Preconditions {
         public UsesAttribute(params Type[] types) {
             foreach(var type in types) {
                 var response = SystemManager.IsValidType(type);
-                if (response.Where(x => !x.IsSucess).Any()) throw new ArgumentException($"{type.Name} isn't a valid system. \n" +
+                if (response.Any(x => !x.IsSucess)) throw new ArgumentException($"{type.Name} isn't a valid system. \n" +
                     $"Reasons :\n" +
                     $"{string.Join(",", response.Select(x => x.Error))}", type.Name);
                 systems.Add(type);
