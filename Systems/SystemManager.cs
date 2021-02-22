@@ -257,7 +257,7 @@ namespace sisbase.Systems {
             if (!deps.Any()) return SisbaseResult.FromSucess();
             else {
                 s.collection ??= new ServiceCollection();
-                var intersection = deps.Intersect(Stack);
+                var intersection = deps.Intersect(Stack).ToList();
                 if (intersection.Any()) return SisbaseResult.FromError(
                     $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
                     $"{s.GetSisbaseTypeName()} -> {string.Join(",",intersection)}\n" +
