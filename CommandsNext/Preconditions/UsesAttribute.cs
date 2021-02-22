@@ -28,7 +28,7 @@ namespace sisbase.CommandsNext.Preconditions {
                 "Have you forgotten to add the singleton?");
 
             var statuses = systems.Select(x => manager.Get(x));
-            var nonLoaded = statuses.Where(x => x.Item2 != SystemStatus.LOADED);
+            var nonLoaded = statuses.Where(x => x.Item2 != SystemStatus.LOADED).ToList();
 
             if (nonLoaded.Any())
                 return PreconditionResult.FromError("The following dependencies weren't loaded.\n" +
