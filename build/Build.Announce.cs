@@ -41,7 +41,7 @@ partial class Build : NukeBuild {
         if (IsDevelopBranch) {
             embed
             .WithAuthor("[sisbase-d.net] New BETA version released!", null, Repo.HttpsUrl)
-            .WithDescription($"Version : {FileVersion}")
+            .WithDescription($"Version : {NextGithubVersion}")
             .WithColor(Color.Red);
             embed.WithFooter("This is a beta version, should be used for testing only. Don't run this in production unless recommended by the dev team.");
 
