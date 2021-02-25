@@ -115,12 +115,11 @@ partial class Build : NukeBuild {
     }
 
     Target Publish => _ => _
-        .DependsOn(GetNextGithubVersion)
+        .DependsOn(GetNextGithubVersion,Pack)
         .Requires(() => IsOriginalRepository)
         .Requires(() => !NugetToken.IsNullOrEmpty() || !IsOriginalRepository)
         .Requires(() => !GithubToken.IsNullOrEmpty() || !IsOriginalRepository)
         .Requires(() => GitVersion.BranchName == DevelopBranch || GitVersion.BranchName == ReleaseBranch)
-        .Executes(() => Pack)
         .Executes(() => {
             if(IsDevelopBranch && !GithubToken.IsNullOrEmpty()) {
                 DotNetNuGetAddSource(_ => _
