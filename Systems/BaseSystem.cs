@@ -1,4 +1,6 @@
-﻿using sisbase.Configuration;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+using sisbase.Configuration;
 using sisbase.Systems.Expansions;
 
 using System;
@@ -51,5 +53,7 @@ namespace sisbase.Systems {
         public virtual async Task<bool> CheckPreconditions() => true;
 
         internal SystemData ToSystemData () => new(Name, Enabled);
+        internal IServiceProvider services;
+        internal IServiceCollection collection;
     }
 }

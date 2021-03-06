@@ -1,8 +1,14 @@
-﻿using Discord.WebSocket;
+﻿using Discord.Commands;
+using Discord.WebSocket;
+
+using Microsoft.Extensions.DependencyInjection;
+
 using sisbase.CommandsNext;
 using sisbase.Common;
 using sisbase.Configuration;
 using sisbase.Logging;
+using sisbase.Systems.Attributes;
+using sisbase.Systems.Enums;
 using sisbase.Systems.Expansions;
 
 using System;
@@ -22,6 +28,8 @@ namespace sisbase.Systems {
         internal ConcurrentDictionary<BaseSystem, Timer> timers { get; } = new();
         internal ConcurrentQueue<Assembly> assemblyQueue { get; } = new();
         internal ConcurrentBag<Assembly> loadedAssemblies { get; } = new();
+        internal IServiceProvider provider;
+        internal IServiceCollection services;
 
         public ConcurrentDictionary<Type, BaseSystem> LoadedSystems { get; } = new();
         public ConcurrentDictionary<Type, BaseSystem> UnloadedSystems { get; } = new();
@@ -31,6 +39,12 @@ namespace sisbase.Systems {
             client = Client;
             config = Config;
             commandSystem = CommandSystem;
+        }
+
+        public (T,SystemStatus) Get<T>() where T : BaseSystem {
+            var type = typeof(T);
+            var (system, status) = Get(type);
+            return ((T)system, status);
         }
 
         public async Task<SisbaseResult> InstallSystemsAsync(Assembly assembly) {
@@ -59,6 +73,25 @@ namespace sisbase.Systems {
             }
         }
 
+        public void WithServices(Action<IServiceCollection> action) {
+            services ??= new ServiceCollection();
+            action?.Invoke(services);
+            provider = services.BuildServiceProvider();
+        }
+
+        internal (BaseSystem, SystemStatus) Get (Type type) {
+            if (LoadedSystems.ContainsKey(type))
+                return (LoadedSystems[type], SystemStatus.LOADED);
+
+            if (UnloadedSystems.ContainsKey(type))
+                return (UnloadedSystems[type], SystemStatus.UNLOADED);
+
+            if (DisabledSystems.ContainsKey(type))
+                return (DisabledSystems[type], SystemStatus.DISABLED);
+
+            return (null, SystemStatus.INVALID);
+        }
+
         internal async Task<SisbaseResult> LoadType(Type type) {
             if (LoadedSystems.ContainsKey(type))
                 return SisbaseResult.FromSucess();
@@ -85,6 +118,18 @@ namespace sisbase.Systems {
                 DisabledSystems.AddOrUpdate(type, system, (type, oldValue) => system);
                 return SisbaseResult.FromError($"{system} is disabled in config @ {config.Path}");
             }
+
+            var depChecker = await CheckDependencies(system, new());
+            if (!depChecker.IsSucess) {
+                return depChecker;
+            } else {
+                Logger.Log("SystemManager",$"Dependencies Loaded for {system.GetSisbaseTypeName()}");
+            }
+
+            LoadImports(system, new());
+
+            if (system.services != null)
+                Inject(system);
 
             if (!await system.CheckPreconditions()) {
                 UnloadedSystems.AddOrUpdate(type, system, (type, oldValue) => system);
@@ -205,6 +250,77 @@ namespace sisbase.Systems {
             config.Update();
 
             Logger.Log("SystemManager", $"Config File @{config.Path} updated");
+        }
+
+        internal async Task<SisbaseResult> CheckDependencies(BaseSystem s, List<Type> Stack) {
+            var deps = GetDependencies(s);
+            if (!deps.Any()) return SisbaseResult.FromSucess();
+            else {
+                s.collection ??= new ServiceCollection();
+                var intersection = deps.Intersect(Stack).ToList();
+                if (intersection.Any()) return SisbaseResult.FromError(
+                    $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
+                    $"{s.GetSisbaseTypeName()} -> {string.Join(",",intersection)}\n" +
+                    $"{string.Join(",", intersection)} -> {s.GetSisbaseTypeName()}"
+                    );
+
+                foreach(var dep in deps) {
+                    var result = await LoadType(dep);
+
+                    if (!result.IsSucess) return SisbaseResult.FromError(
+                        $"Error while loading dependencies for {s.GetSisbaseTypeName()}.\n"
+                        + $" Dependency {dep.Name} errored while loading. \n Error(s) : {result.Error}");
+
+                    var sys = LoadedSystems[dep];
+                    s.collection.AddSingleton(dep,sys);
+                    var innerDep = GetDependencies(sys);
+                    var newStack = Stack;
+                    newStack.Add(s.GetType());
+
+                    s.services = s.collection.BuildServiceProvider();
+                    if (!innerDep.Any()) return SisbaseResult.FromSucess();
+                    return await CheckDependencies(sys, newStack);
+                }
+
+                return SisbaseResult.FromSucess();
+            }
+        }
+
+        internal SisbaseResult LoadImports(BaseSystem s, List<Type> stack) {
+            var imports = GetImports(s);
+            if (!imports.Any()) return SisbaseResult.FromSucess();
+            s.collection ??= new ServiceCollection();
+            foreach (var import in imports) {
+                var service = provider.GetService(import);
+                if (service == null) throw new InvalidOperationException($"SystemManager's ServiceProvider doesn't provide a {import.FullName} instance.\n" +
+                    $"Have you forgotten to add it to the provider.\n" +
+                    $"Tip : SystemManager#WithServices()");
+                s.collection.AddSingleton(import, service);
+            }
+            s.services = s.collection.BuildServiceProvider();
+            return SisbaseResult.FromSucess();
+        }
+
+        internal List<Type> GetDependencies(BaseSystem s) {
+            var attrib = s.GetType().GetCustomAttribute<DependsAttribute>();
+            if(attrib == null) return new();
+            return attrib.Systems;
+        }
+
+        internal List<Type> GetImports(BaseSystem s) {
+            var attrib = s.GetType().GetCustomAttribute<UsesAttribute>();
+            if (attrib == null) return new();
+            return attrib.types;
+        }
+
+        internal void Inject(BaseSystem system) {
+            var type = system.GetType().GetTypeInfo();
+            var injectableProperties = ReflectionUtils.GetInjectableProperties(type);
+            foreach (var property in injectableProperties) {
+                var instance = system.services.GetService(property.PropertyType);
+                if (instance == null) continue;
+                property.SetValue(system, instance);
+            }
         }
 
         internal async Task ReloadCommandSystem() {

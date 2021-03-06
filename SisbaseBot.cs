@@ -47,11 +47,14 @@ namespace sisbase {
 
         public void UseSystemsApi(SystemConfig config) {
             Systems = new(Client, config, CommandSystem);
+            CommandSystem._collection.AddSingleton(Systems);
+            CommandSystem._provider = CommandSystem._collection.BuildServiceProvider();
         }
 
-        public void WithServices(Action<IServiceCollection> Services)
-            => Services?.Invoke(CommandSystem._collection);
-
+        public void WithServices(Action<IServiceCollection> Services) { 
+            Services?.Invoke(CommandSystem._collection);
+            Systems.WithServices(Services);
+        }
         public Task InstallCommandsAsync(Assembly assembly)
             => CommandSystem.InstallCommandsAsync(assembly);
 
