@@ -6,16 +6,16 @@ using Discord.WebSocket;
 
 namespace sisbase.Streams {
     public static class MessageStreams {
-        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel) {
-            await foreach(var group in channel.GetMessagesAsync()) {
+        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel, int limit = 100) {
+            await foreach(var group in channel.GetMessagesAsync(limit)) {
                 foreach(var elem in group) {
                     yield return elem;
                 }
             }
         }
         
-        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel, IMessage from) {
-            await foreach(var group in channel.GetMessagesAsync(fromMessage:from,dir:Direction.Before)) {
+        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel, IMessage from, int limit = 100) {
+            await foreach(var group in channel.GetMessagesAsync(limit: limit,fromMessage:from,dir:Direction.Before)) {
                 foreach(var elem in group) {
                     yield return elem;
                 }
