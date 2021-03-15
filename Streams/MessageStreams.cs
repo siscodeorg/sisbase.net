@@ -6,7 +6,7 @@ using Discord.WebSocket;
 
 namespace sisbase.Streams {
     public static class MessageStreams {
-        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this SocketTextChannel channel) {
+        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel) {
             await foreach(var group in channel.GetMessagesAsync()) {
                 foreach(var elem in group) {
                     yield return elem;
@@ -14,7 +14,7 @@ namespace sisbase.Streams {
             }
         }
         
-        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this SocketTextChannel channel, IMessage from) {
+        public static async IAsyncEnumerable<IMessage> StreamMessagesAsync (this ITextChannel channel, IMessage from) {
             await foreach(var group in channel.GetMessagesAsync(fromMessage:from,dir:Direction.Before)) {
                 foreach(var elem in group) {
                     yield return elem;
@@ -22,7 +22,7 @@ namespace sisbase.Streams {
             }
         }
 
-        public static async IAsyncEnumerable<IMessage> StreamAllMessagesAsync(this SocketTextChannel channel) {
+        public static async IAsyncEnumerable<IMessage> StreamAllMessagesAsync(this ITextChannel channel) {
             IMessage last = null;
             var isLastBatch = false;
             int count;
