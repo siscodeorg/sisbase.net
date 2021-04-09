@@ -173,7 +173,10 @@ namespace sisbase.Systems {
             var check = IsValidType(type);
             if (check.Any(x => !x.IsSucess))
                 return SisbaseResult.FromError(string.Join('\n', check.Select(c => c.Error)));
-
+            
+            if (system.IsVital())
+                return SisbaseResult.FromError($"Attempted unloading a vital system: {system}");
+            
             if (system.HasExpansion<Sheduler>()) {
                 timers[system].Dispose();
                 if(timers.TryRemove(system, out var _)) {
