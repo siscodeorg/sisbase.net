@@ -49,7 +49,6 @@ namespace sisbase.Streams {
 
             await foreach (var message in channel.StreamMessagesAsync()) {
                 last = message;
-                Console.WriteLine($"Last set to {last.Id}");
                 yield return message;
             }
 
