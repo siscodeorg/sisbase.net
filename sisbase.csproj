@@ -26,6 +26,7 @@
     <Compile Remove="run\**" />
     <EmbeddedResource Remove="run\**" />
     <None Remove="run\**" />
+    <EmbeddedResource Include="Resources\**" />
   </ItemGroup>
 
   <ItemGroup>
