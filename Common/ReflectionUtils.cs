@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -25,5 +26,8 @@ namespace sisbase.Common {
             }
             return result.ToArray();
         }
+        
+        internal static Stream GetResource(string resourceName)
+            => typeof(SisbaseBot).Assembly.GetManifestResourceStream(resourceName);
     }
 }
