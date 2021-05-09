@@ -163,6 +163,17 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        public async Task<SisbaseResult> UnloadSystem<T>() where T : BaseSystem {
+            var (system, status) = Get<T>();
+            return status switch {
+                SystemStatus.LOADED => await UnloadSystem(typeof(T), system),
+                SystemStatus.UNLOADED => SisbaseResult.FromError("Attempted unloading system that was already unloaded."),
+                SystemStatus.DISABLED => SisbaseResult.FromError("Attempted unloading a disabled system."),
+                SystemStatus.INVALID => SisbaseResult.FromError($"The type {typeof(T).AssemblyQualifiedName} is invalid."),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
         internal async Task<SisbaseResult> UnloadSystem(Type type, BaseSystem system) {
             if (UnloadedSystems.ContainsKey(type))
                 return SisbaseResult.FromSucess();
