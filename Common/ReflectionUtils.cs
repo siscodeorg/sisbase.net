@@ -25,5 +25,10 @@ namespace sisbase.Common {
             }
             return result.ToArray();
         }
+
+        internal static bool HasAttribute <T>(this TypeInfo ownerType) where T : Attribute {
+            var customAttribute = ownerType.GetCustomAttribute<T>();
+            return customAttribute != null;
+        } 
     }
 }

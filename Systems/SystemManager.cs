@@ -163,6 +163,17 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        public async Task<SisbaseResult> UnloadSystem<T>() where T : BaseSystem {
+            var (system, status) = Get<T>();
+            return status switch {
+                SystemStatus.LOADED => await UnloadSystem(typeof(T), system),
+                SystemStatus.UNLOADED => SisbaseResult.FromError("Attempted unloading system that was already unloaded."),
+                SystemStatus.DISABLED => SisbaseResult.FromError("Attempted unloading a disabled system."),
+                SystemStatus.INVALID => SisbaseResult.FromError($"The type {typeof(T).AssemblyQualifiedName} is invalid."),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
         internal async Task<SisbaseResult> UnloadSystem(Type type, BaseSystem system) {
             if (UnloadedSystems.ContainsKey(type))
                 return SisbaseResult.FromSucess();
@@ -173,7 +184,10 @@ namespace sisbase.Systems {
             var check = IsValidType(type);
             if (check.Any(x => !x.IsSucess))
                 return SisbaseResult.FromError(string.Join('\n', check.Select(c => c.Error)));
-
+            
+            if (system.IsVital())
+                return SisbaseResult.FromError($"Attempted unloading a vital system: {system}");
+            
             if (system.HasExpansion<Sheduler>()) {
                 timers[system].Dispose();
                 if(timers.TryRemove(system, out var _)) {
