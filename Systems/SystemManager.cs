@@ -19,6 +19,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static sisbase.Logging.Logger;
 
 namespace sisbase.Systems {
     public class SystemManager {
@@ -63,7 +64,7 @@ namespace sisbase.Systems {
 
             foreach (var result in query) {
                 if (!result.IsSucess)
-                    Logger.Error("SystemManager", result.Error);
+                    result.Error("SystemManager | InstallSystemAsync");
             }
 
             if(query.All(x => x.IsSucess)) {
@@ -216,7 +217,7 @@ namespace sisbase.Systems {
                 var result = await LoadAssembly(assembly);
 
                 if (!result.IsSucess) {
-                    Logger.Error("SystemManager", result.Error);
+                    result.Error("SystemManager | LoadAssemblyQueue");
                 } else {
                     Logger.Log("SystemManager", $"Systems from {assembly.GetName().Name} loaded sucessfully.");
                     loadedAssemblies.Add(assembly);
@@ -237,7 +238,7 @@ namespace sisbase.Systems {
                 if(result.IsSucess) {
                     Logger.Log("SystemManager", $"Sucessfully loaded {system}");
                 } else {
-                    Logger.Error("SystemManager", result.Error);
+		    result.Error("SystemManager | RetryUnloadedSystems");
                 }
             }
 
@@ -358,7 +359,7 @@ namespace sisbase.Systems {
                 if (result.IsSucess) {
                     Logger.Log("SystemManager", $"{type.Name} Loaded sucessfully.");
                 } else {
-                    Logger.Error("SystemManager", result.Error);
+                    result.Error("SystemManager | LoadAssembly");
                 }
             }
             return SisbaseResult.FromSucess();
