@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using sisbase.Common;
 
 namespace sisbase.Logging {
     public static class Logger {
@@ -22,6 +23,9 @@ namespace sisbase.Logging {
         public static void Error(string message) => GenericLog("", message, LogLevel.ERROR);
         public static void Error(string source,
             string message) => GenericLog(source, message, LogLevel.ERROR);
+	
+	public static void Error(this SisbaseResult error, string source) => Error(error.Error, source);
+
 
         internal static void GenericLog(string source, string message, LogLevel level) {
             Console.ForegroundColor = _colorMap[level];
