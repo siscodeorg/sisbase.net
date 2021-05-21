@@ -5,6 +5,12 @@ using Discord;
 
 namespace sisbase.Embeds {
     public static class ExtensionEmbeds {
+    
+        public static Embed Mutate(this Embed embed, Action<EmbedBuilder> func) {
+            var eb = embed.ToEmbedBuilder();
+            func(eb);
+            return eb.Build();
+        }
 
         public static EmbedFieldBuilder ToEmbedFieldBuilder(this EmbedField field) 
             => new() {Name = field.Name, Value = field.Value, IsInline = field.Inline};
