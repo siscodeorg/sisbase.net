@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+using Discord;
 using Discord.Commands;
 
 using sisbase.CommandsNext;
@@ -53,6 +54,25 @@ namespace sisbase.TestBot {
         public async Task commandHelpEmbed([Summary("This thing has an int and its called yay!")] int yay) {
             Random r = new();
             await ReplyAsync($"yay! you called the useful command. number is {r.Next(0-yay, yay)}.");
+        }
+
+        [Command("mutate")]
+        public async Task mutateCommand() {
+            var embed = EmbedBase.OutputEmbed("Starting Embed");
+            await ReplyAsync(embed: embed);
+            await ReplyAsync(embed: embed.Mutate(x => x.WithTitle("Mutated Embed")));
+            await ReplyAsync(embed: embed
+                .Mutate(x =>
+                {
+                    x
+                        .WithTitle("Fancy - Mutated Embed")
+                        .WithColor(Color.Red)
+                        .AddField("Yeah", "That was fancy!");
+                }));
+            await ReplyAsync(embed: embed.Mutate(x => x.WithFooter("Footer Test", "https://i.imgur.com/tXWsFHJ.png")));
+            await ReplyAsync(embed: embed.Mutate(x =>
+                x.WithDescription("Thumbnail + Image Test").WithThumbnailUrl("https://i.imgur.com/tXWsFHJ.png")
+                    .WithImageUrl("https://i.imgur.com/tXWsFHJ.png")));
         }
     }
 
