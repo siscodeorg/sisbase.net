@@ -1,0 +1,16 @@
+project sisbase.net:
+using: csharp, sisbase.net apis, Feature
+concept: SisbaseBot
+
+class SisbaseBot:
+constructor(String pathToJson)
+loads(Assembly assembly)
+
+optOut(Feature features)
+useResolver(IPrefixResolver)
+startAsync()
+
+concept Feature:
+-- a bit flag for defining sisbase features to be disabled/enabled.
+-- Eg: 11111 = All Features
+--     10000 = Interactivity
