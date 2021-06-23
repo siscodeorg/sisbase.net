@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace sisbase.Systems {
     public class SystemManager {
-        internal DiscordSocketClient client { get; init; }
+        internal BaseSocketClient client { get; init; }
         internal SystemConfig config { get; init; }
         internal SisbaseCommandSystem commandSystem { get; init; }
         internal ConcurrentDictionary<BaseSystem, Timer> timers { get; } = new();
@@ -35,7 +35,7 @@ namespace sisbase.Systems {
         public ConcurrentDictionary<Type, BaseSystem> UnloadedSystems { get; } = new();
         public ConcurrentDictionary<Type, BaseSystem> DisabledSystems { get; } = new();
 
-        public SystemManager(DiscordSocketClient Client, SystemConfig Config, SisbaseCommandSystem CommandSystem) {
+        public SystemManager(BaseSocketClient Client, SystemConfig Config, SisbaseCommandSystem CommandSystem) {
             client = Client;
             config = Config;
             commandSystem = CommandSystem;
