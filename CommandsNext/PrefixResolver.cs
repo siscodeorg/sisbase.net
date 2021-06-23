@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace sisbase.CommandsNext {
     public abstract class PrefixResolver {
-        public DiscordSocketClient Client { get; init; }
+        public BaseSocketClient Client { get; init; }
         public SocketSelfUser User { get; private init; }
 
-        public PrefixResolver(DiscordSocketClient client) {
+        public PrefixResolver(BaseSocketClient client) {
             Client = client;
             User = Client.CurrentUser;
         }
