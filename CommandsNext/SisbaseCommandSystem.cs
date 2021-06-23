@@ -10,21 +10,25 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
+using Discord;
+
+using sisbase.Logging;
+
 namespace sisbase.CommandsNext {
     public class SisbaseCommandSystem {
         internal PrefixResolver _prefixResolver;
-        internal DiscordSocketClient _client;
+        internal BaseSocketClient _client;
         internal CommandService _commandService = new();
         internal IServiceProvider _provider;
         internal ServiceCollection _collection = new();
 
-        public SisbaseCommandSystem(DiscordSocketClient client) {
+        public SisbaseCommandSystem(BaseSocketClient client) {
             _client = client;
             _prefixResolver = new RealTimePrefixResolver(this);
             _provider = initialServiceCollection.BuildServiceProvider();
         }
 
-        public SisbaseCommandSystem(DiscordSocketClient client, SisbaseCommandSystemConfiguration config) {
+        public SisbaseCommandSystem(BaseSocketClient client, SisbaseCommandSystemConfiguration config) {
             _client = client;
             _prefixResolver = config.PrefixResolver ?? new RealTimePrefixResolver(this);
             config.Services?.Invoke(initialServiceCollection);
@@ -40,7 +44,20 @@ namespace sisbase.CommandsNext {
             if (message is not SocketUserMessage msg) return;
             var argPos = await _prefixResolver.GetArgumentPositionAsync(msg);
             if (argPos == 0) return;
-            var ctx = new SocketCommandContext(_client, msg);
+           
+            ICommandContext ctx;
+            switch (_client) {
+                case DiscordShardedClient _sharded:
+                    ctx = new ShardedCommandContext(_sharded, msg);
+                    break;
+                case DiscordSocketClient _socket:
+                    ctx = new SocketCommandContext(_socket, msg);
+                    break;
+                default:
+                    Logger.Error($"Attempted using unmapped {_client.GetType()} on SisbaseCommandSystem. Please open an issue on sisbase.net's repository.");
+                    return;
+            }
+
             var commands = _commandService.Search(message.Content[argPos..]);
             var (response, command) = await Ugly.ValidateAndGetBestMatch(commands, ctx, _provider);
             if (!response.IsSuccess) return;
