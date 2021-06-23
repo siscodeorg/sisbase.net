@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace sisbase.CommandsNext.Extensions {
     public static class ExtensionSisbaseCommandContext {
-        public static SisbaseCommandContext AsSisbaseContext(this SocketCommandContext context, CommandInfo command)
+        public static SisbaseCommandContext AsSisbaseContext(this ICommandContext context, CommandInfo command)
             => new(context.Client, context.Message, command);
     }
 }
