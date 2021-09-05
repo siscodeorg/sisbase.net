@@ -320,6 +320,12 @@ namespace sisbase.Systems {
             if(attrib == null) return new();
             return attrib.Systems;
         }
+        
+        internal List<Type> GetDependencies(Type t) {
+            var attrib = t.GetCustomAttribute<DependsAttribute>();
+            if(attrib == null) return new();
+            return attrib.Systems;
+        }
 
         internal List<Type> GetImports(BaseSystem s) {
             var attrib = s.GetType().GetCustomAttribute<UsesAttribute>();
