@@ -300,6 +300,39 @@ namespace sisbase.Systems {
             }
         }
 
+        internal SisbaseResult CheckCycles(Type systemType) {
+            Dictionary<Type,List<SisbaseResult>> fails = new();
+            Dictionary<Type, HashSet<Type>> data = new();
+            Queue<Type> q = new();
+            
+            q.Enqueue(systemType);
+            
+            while (q.Count > 0) {
+                var temp = q.Dequeue();
+                
+                if (!data.ContainsKey(temp)) data.Add(temp, new());
+                
+                foreach (var type in GetDependencies(temp)) {
+                    if (!data[temp].Contains(type)) {
+                        data[temp].Add(type);
+                        q.Enqueue(type);
+                    } else {
+                        if(!fails.ContainsKey(temp)) fails.Add(temp, new());
+                        
+                        fails[temp].Add(SisbaseResult.FromError($"{temp.Name} -> {type.Name}"));
+                    }
+                }
+            }
+            
+            if (fails.Any()) {
+                var formatted = fails.Select(x => $"[{x.Key.Name}] : {(string.Join("; ", x.Value.Select(y => y.Error)))}");
+                return SisbaseResult.FromError($"Cyclical dependency @ {systemType.Name}\n" +
+                                               $"{(string.Join("\n", formatted))}");
+            } 
+            
+            return SisbaseResult.FromSucess();
+        }
+
         internal SisbaseResult LoadImports(BaseSystem s, List<Type> stack) {
             var imports = GetImports(s);
             if (!imports.Any()) return SisbaseResult.FromSucess();
