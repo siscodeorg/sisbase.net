@@ -333,6 +333,37 @@ namespace sisbase.Systems {
             return SisbaseResult.FromSucess();
         }
 
+        internal async Task<SisbaseResult> LoadDependencies(BaseSystem system) {
+            system.collection ??= new ServiceCollection();
+            List<SisbaseResult> errors = new();
+            var dependencies = GetDependencies(system.GetType());
+            foreach (var dependency in dependencies) {
+                var result = await LoadType(dependency);
+                if (!result.IsSucess) {
+                    errors.Add(result);
+                    continue;
+                }
+                
+                var dep = LoadedSystems[dependency];
+                system.collection.AddSingleton(dependency, dep);
+                
+                if (GetDependencies(dependency).Any()) {
+                    var innerResult = await LoadDependencies(dep);
+                    if (!innerResult.IsSucess) {
+                        errors.Add(result);
+                    }
+                }
+
+            }
+
+            system.services = system.collection.BuildServiceProvider();
+            
+            if(!errors.Any()) return SisbaseResult.FromSucess();
+            
+            return SisbaseResult.FromError($"Errors while loading {system.GetSisbaseTypeName()}:\n" +
+                                           $"{(string.Join("\n", errors.Select(x => x.Error)))}");
+        }  
+
         internal SisbaseResult LoadImports(BaseSystem s, List<Type> stack) {
             var imports = GetImports(s);
             if (!imports.Any()) return SisbaseResult.FromSucess();
