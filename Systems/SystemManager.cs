@@ -265,40 +265,6 @@ namespace sisbase.Systems {
             Logger.Log("SystemManager", $"Config File @{config.Path} updated");
         }
 
-        internal async Task<SisbaseResult> CheckDependencies(BaseSystem s, List<Type> Stack) {
-            var deps = GetDependencies(s);
-            if (!deps.Any()) return SisbaseResult.FromSucess();
-            else {
-                s.collection ??= new ServiceCollection();
-                var intersection = deps.Intersect(Stack).ToList();
-                if (intersection.Any()) return SisbaseResult.FromError(
-                    $"Cyclical dependency detected while loading {s.GetSisbaseTypeName()}.\n" +
-                    $"{s.GetSisbaseTypeName()} -> {string.Join(",",intersection)}\n" +
-                    $"{string.Join(",", intersection)} -> {s.GetSisbaseTypeName()}"
-                    );
-
-                foreach(var dep in deps) {
-                    var result = await LoadType(dep);
-
-                    if (!result.IsSucess) return SisbaseResult.FromError(
-                        $"Error while loading dependencies for {s.GetSisbaseTypeName()}.\n"
-                        + $" Dependency {dep.Name} errored while loading. \n Error(s) : {result.Error}");
-
-                    var sys = LoadedSystems[dep];
-                    s.collection.AddSingleton(dep,sys);
-                    var innerDep = GetDependencies(sys);
-                    var newStack = Stack;
-                    newStack.Add(s.GetType());
-
-                    s.services = s.collection.BuildServiceProvider();
-                    if (!innerDep.Any()) return SisbaseResult.FromSucess();
-                    return await CheckDependencies(sys, newStack);
-                }
-
-                return SisbaseResult.FromSucess();
-            }
-        }
-
         internal SisbaseResult CheckCycles(Type systemType) {
             Dictionary<Type,List<SisbaseResult>> fails = new();
             Dictionary<Type, HashSet<Type>> data = new();
