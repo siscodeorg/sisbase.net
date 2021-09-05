@@ -119,12 +119,11 @@ namespace sisbase.Systems {
                 return SisbaseResult.FromError($"{system} is disabled in config @ {config.Path}");
             }
 
-            var depChecker = await CheckDependencies(system, new());
-            if (!depChecker.IsSucess) {
-                return depChecker;
-            } else {
-                Logger.Log("SystemManager",$"Dependencies Loaded for {system.GetSisbaseTypeName()}");
-            }
+            var depChecker = CheckCycles(type);
+            if (!depChecker.IsSucess) return depChecker;
+
+            var depLoads = await LoadDependencies(system);
+            if (!depLoads.IsSucess) return depLoads;
 
             LoadImports(system, new());
 
